@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SubEdit Pro - Advanced Subtitle Style Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .video-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-wrapper {
+            position: relative;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            margin-bottom: 20px;
+        }
+
+        .demo-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+
+        .subtitle-overlay {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+            max-width: 90%;
+            transition: all 0.3s ease;
+        }
+
+        .video-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #333;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group h3 {
+            color: #667eea;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .color-input {
+            width: 60px;
+            height: 40px;
+            padding: 0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .range-input {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #e1e5e9;
+            outline: none;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            background: white;
+        }
+
+        .checkbox.checked {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .preset-btn {
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .export-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .live-preview {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+        }
+
+        .preview-text {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            margin-bottom: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+
+        .timeline {
+            background: #333;
+            height: 60px;
+            border-radius: 10px;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.1s ease;
+            position: relative;
+        }
+
+        .timeline-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="control-group">
+                <h3>📝 Text Content</h3>
+                <div class="form-group">
+                    <label>Subtitle Text</label>
+                    <textarea id="subtitleText" class="form-control" rows="3" placeholder="Enter your subtitle text here...">Welcome to SubEdit Pro
+Professional subtitle editing</textarea>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>🎨 Typography</h3>
+                <div class="form-group">
+                    <label>Font Family</label>
+                    <select id="fontFamily" class="form-control">
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                        <option value="Impact, sans-serif">Impact</option>
+                        <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                        <option value="Georgia, serif">Georgia</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Font Size: <span id="fontSizeValue">36px</span></label>
+                    <input type="range" id="fontSize" class="range-input form-control" min="12" max="72" value="36">
+                </div>
+                <div class="form-group">
+                    <label>Font Weight</label>
+                    <select id="fontWeight" class="form-control">
+                        <option value="300">Light</option>
+                        <option value="400">Regular</option>
+                        <option value="600">Semi-Bold</option>
+                        <option value="700" selected>Bold</option>
+                        <option value="900">Black</option>
+                    </select>
+                </div>
+                <div class="checkbox-group">
+                    <div id="italicCheck" class="checkbox"></div>
+                    <label>Italic</label>
+                </div>
+                <div class="checkbox-group">
+                    <div id="underlineCheck" class="checkbox"></div>
+                    <label>Underline</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>🌈 Colors</h3>
+                <div class="form-group">
+                    <label>Text Color</label>
+                    <input type="color" id="textColor" class="color-input form-control" value="#ffffff">
+                </div>
+                <div class="form-group">
+                    <label>Outline Color</label>
+                    <input type="color" id="outlineColor" class="color-input form-control" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label>Outline Width: <span id="outlineWidthValue">2px</span></label>
+                    <input type="range" id="outlineWidth" class="range-input form-control" min="0" max="8" value="2">
+                </div>
+                <div class="form-group">
+                    <label>Shadow Color</label>
+                    <input type="color" id="shadowColor" class="color-input form-control" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label>Shadow Blur: <span id="shadowBlurValue">4px</span></label>
+                    <input type="range" id="shadowBlur" class="range-input form-control" min="0" max="20" value="4">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>📐 Background</h3>
+                <div class="checkbox-group">
+                    <div id="backgroundCheck" class="checkbox checked"></div>
+                    <label>Enable Background</label>
+                </div>
+                <div class="form-group">
+                    <label>Background Color</label>
+                    <input type="color" id="backgroundColor" class="color-input form-control" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label>Background Opacity: <span id="backgroundOpacityValue">0.7</span></label>
+                    <input type="range" id="backgroundOpacity" class="range-input form-control" min="0" max="1" step="0.1" value="0.7">
+                </div>
+                <div class="form-group">
+                    <label>Padding: <span id="paddingValue">15px</span></label>
+                    <input type="range" id="padding" class="range-input form-control" min="0" max="50" value="15">
+                </div>
+                <div class="form-group">
+                    <label>Border Radius: <span id="borderRadiusValue">10px</span></label>
+                    <input type="range" id="borderRadius" class="range-input form-control" min="0" max="30" value="10">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>📍 Position</h3>
+                <div class="form-group">
+                    <label>Horizontal: <span id="horizontalValue">50%</span></label>
+                    <input type="range" id="horizontal" class="range-input form-control" min="0" max="100" value="50">
+                </div>
+                <div class="form-group">
+                    <label>Vertical: <span id="verticalValue">85%</span></label>
+                    <input type="range" id="vertical" class="range-input form-control" min="0" max="100" value="85">
+                </div>
+                <div class="form-group">
+                    <label>Text Alignment</label>
+                    <select id="textAlign" class="form-control">
+                        <option value="left">Left</option>
+                        <option value="center" selected>Center</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>⚡ Quick Presets</h3>
+                <div class="preset-buttons">
+                    <button class="preset-btn" onclick="applyPreset('netflix')">Netflix</button>
+                    <button class="preset-btn" onclick="applyPreset('youtube')">YouTube</button>
+                    <button class="preset-btn" onclick="applyPreset('cinema')">Cinema</button>
+                    <button class="preset-btn" onclick="applyPreset('minimal')">Minimal</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header fade-in">
+                <h1>SubEdit Pro</h1>
+                <p>Professional Subtitle Style Editor with Real-time Preview</p>
+            </div>
+
+            <div class="video-container fade-in">
+                <h3 style="margin-bottom: 20px; color: #667eea;">🎬 Live Preview</h3>
+                <div class="video-wrapper">
+                    <canvas id="demoVideo" class="demo-video" width="1920" height="1080"></canvas>
+                    <div id="subtitleOverlay" class="subtitle-overlay">
+                        <div id="subtitleText">Welcome to SubEdit Pro<br>Professional subtitle editing</div>
+                    </div>
+                </div>
+                
+                <div class="timeline">
+                    <div id="timelineProgress" class="timeline-progress" style="width: 0%"></div>
+                    <div class="timeline-markers">
+                        <span>00:00</span>
+                        <span style="margin-left: auto;">02:30</span>
+                    </div>
+                </div>
+                
+                <div class="video-controls">
+                    <button id="playPause" class="btn btn-primary" onclick="togglePlayback()">▶️ Play</button>
+                    <button class="btn btn-secondary" onclick="resetDemo()">🔄 Reset</button>
+                    <button class="btn btn-secondary" onclick="fullscreenPreview()">🔍 Fullscreen</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="characterCount">42</div>
+                        <div class="stat-label">Characters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="wordCount">6</div>
+                        <div class="stat-label">Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="lineCount">2</div>
+                        <div class="stat-label">Lines</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="readingTime">2.1s</div>
+                        <div class="stat-label">Read Time</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="export-section fade-in">
+                <h3 style="color: #667eea; margin-bottom: 20px;">📤 Export Styles</h3>
+                
+                <div class="live-preview">
+                    <h4 style="color: white; margin-bottom: 15px;">Style Preview</h4>
+                    <div class="preview-text" id="stylePreview">
+                        Your subtitle will look like this
+                    </div>
+                    <div style="font-family: 'Courier New', monospace; font-size: 12px; color: rgba(255,255,255,0.7);">
+                        CSS: <span id="cssPreview">font-family: Arial; font-size: 36px; color: #ffffff;</span>
+                    </div>
+                </div>
+
+                <div class="export-options">
+                    <button class="btn btn-primary" onclick="exportASS()">
+                        📄 Export .ASS Style
+                        <div id="assSpinner" class="loading-spinner" style="display: none;"></div>
+                    </button>
+                    <button class="btn btn-primary" onclick="exportSRT()">
+                        📝 Export .SRT Style
+                        <div id="srtSpinner" class="loading-spinner" style="display: none;"></div>
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportCSS()">
+                        💻 Export CSS
+                    </button>
+                    <button class="btn btn-secondary" onclick="saveProject()">
+                        💾 Save Project
+                    </button>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <input type="file" id="loadProject" accept=".json" style="display: none;" onchange="loadProject()">
+                    <button class="btn btn-secondary" onclick="document.getElementById('loadProject').click()">
+                        📂 Load Project
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        const state = {
+            isPlaying: false,
+            currentTime: 0,
+            duration: 150, // 2.5 minutes in seconds
+            animationId: null
+        };
+
+        // Initialize canvas animation
+        function initCanvas() {
+            const canvas = document.getElementById('demoVideo');
+            const ctx = canvas.getContext('2d');
+            let frame = 0;
+
+            function animate() {
+                // Create animated background
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, `hsl(${(frame * 0.5) % 360}, 60%, 20%)`);
+                gradient.addColorStop(0.5, `hsl(${(frame * 0.3 + 180) % 360}, 40%, 30%)`);
+                gradient.addColorStop(1, `hsl(${(frame * 0.7 + 90) % 360}, 50%, 25%)`);
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Add floating particles
+                for (let i = 0; i < 20; i++) {
+                    const x = (Math.sin(frame * 0.01 + i * 0.5) + 1) * canvas.width * 0.5;
+                    const y = (Math.cos(frame * 0.015 + i * 0.3) + 1) * canvas.height * 0.5;
+                    const size = Math.sin(frame * 0.02 + i) * 3 + 5;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${0.1 + Math.sin(frame * 0.03 + i) * 0.05})`;
+                    ctx.fill();
+                }
+
+                frame++;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Style update functions
+        function updateSubtitleStyle() {
+            const overlay = document.getElementById('subtitleOverlay');
+            const textElement = overlay.querySelector('#subtitleText');
+            const preview = document.getElementById('stylePreview');
+            
+            // Get all style values
+            const styles = {
+                fontFamily: document.getElementById('fontFamily').value,
+                fontSize: document.getElementById('fontSize').value + 'px',
+                fontWeight: document.getElementById('fontWeight').value,
+                fontStyle: document.getElementById('italicCheck').classList.contains('checked') ? 'italic' : 'normal',
+                textDecoration: document.getElementById('underlineCheck').classList.contains('checked') ? 'underline' : 'none',
+                color: document.getElementById('textColor').value,
+                textShadow: `${document.getElementById('shadowBlur').value}px ${document.getElementById('shadowBlur').value}px ${document.getElementById('shadowBlur').value}px ${document.getElementById('shadowColor').value}`,
+                WebkitTextStroke: `${document.getElementById('outlineWidth').value}px ${document.getElementById('outlineColor').value}`,
+                textAlign: document.getElementById('textAlign').value,
+                padding: document.getElementById('padding').value + 'px',
+                borderRadius: document.getElementById('borderRadius').value + 'px',
+                left: document.getElementById('horizontal').value + '%',
+                top: document.getElementById('vertical').value + '%'
+            };
+
+            // Background styles
+            const hasBackground = document.getElementById('backgroundCheck').classList.contains('checked');
+            if (hasBackground) {
+                const bgColor = hexToRgba(document.getElementById('backgroundColor').value, document.getElementById('backgroundOpacity').value);
+                styles.backgroundColor = bgColor;
+            } else {
+                styles.backgroundColor = 'transparent';
+            }
+
+            // Apply styles
+            Object.assign(textElement.style, styles);
+            Object.assign(preview.style, styles);
+
+            // Update text content
+            const text = document.getElementById('subtitleText').value;
+            textElement.innerHTML = text.replace(/\n/g, '<br>');
+            preview.innerHTML = text.replace(/\n/g, '<br>') || 'Your subtitle will look like this';
+
+            // Update CSS preview
+            updateCSSPreview(styles);
+            updateStats(text);
+        }
+
+        function updateCSSPreview(styles) {
+            const cssPreview = document.getElementById('cssPreview');
+            const cssText = Object.entries(styles)
+                .filter(([key, value]) => value && key !== 'left' && key !== 'top')
+                .map(([key, value]) => `${camelToKebab(key)}: ${value}`)
+                .join('; ');
+            cssPreview.textContent = cssText;
+        }
+
+        function updateStats(text) {
+            const chars = text.length;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const lines = text.split('\n').length;
+            const readingTime = Math.max(1, chars * 0.05); // 50ms per character
+
+            document.getElementById('characterCount').textContent = chars;
+            document.getElementById('wordCount').textContent = words;
+            document.getElementById('lineCount').textContent = lines;
+            document.getElementById('readingTime').textContent = readingTime.toFixed(1) + 's';
+        }
+
+        // Utility functions
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function camelToKebab(str) {
+            return str.replace(/([A-Z])/g, '-$1').toLowerCase();
+        }
+
+        function toggleCheckbox(id) {
+            const checkbox = document.getElementById(id);
+            checkbox.classList.toggle('checked');
+            updateSubtitleStyle();
+        }
+
+        // Playback controls
+        function togglePlayback() {
+            const btn = document.getElementById('playPause');
+            
+            if (state.isPlaying) {
+                state.isPlaying = false;
+                btn.innerHTML = '▶️ Play';
+                if (state.animationId) {
+                    cancelAnimationFrame(state.animationId);
+                }
+            } else {
+                state.isPlaying = true;
+                btn.innerHTML = '⏸️ Pause';
+                updateTimeline();
+            }
+        }
+
+        function updateTimeline() {
+            if (!state.isPlaying) return;
+
+            state.currentTime += 0.1;
+            if (state.currentTime >= state.duration) {
+                state.currentTime = 0;
+            }
+
+            const progress = (state.currentTime / state.duration) * 100;
+            document.getElementById('timelineProgress').style.width = progress + '%';
+
+            state.animationId = requestAnimationFrame(() => {
+                setTimeout(updateTimeline, 100);
+            });
+        }
+
+        function resetDemo() {
+            state.currentTime = 0;
+            document.getElementById('timelineProgress').style.width = '0%';
+            if (state.isPlaying) {
+                togglePlayback();
+            }
+        }
+
+        function fullscreenPreview() {
+            const overlay = document.getElementById('subtitleOverlay');
+            const clone = overlay.cloneNode(true);
+            
+            const fullscreen = document.createElement('div');
+            fullscreen.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0,0,0,0.9);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            `;
+            
+            clone.style.position = 'relative';
+            clone.style.transform = 'none';
+            clone.style.left = 'auto';
+            clone.style.top = 'auto';
+            clone.style.bottom = 'auto';
+            
+            fullscreen.appendChild(clone);
+            document.body.appendChild(fullscreen);
+            
+            fullscreen.onclick = () => document.body.removeChild(fullscreen);
+            
+            // Add escape key listener
+            const escapeHandler = (e) => {
+                if (e.key === 'Escape') {
+                    document.body.removeChild(fullscreen);
+                    document.removeEventListener('keydown', escapeHandler);
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
+        }
+
+        // Preset configurations
+        function applyPreset(preset) {
+            const presets = {
+                netflix: {
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: 40,
+                    fontWeight: 700,
+                    textColor: '#ffffff',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 0.8,
+                    outlineColor: '#000000',
+                    outlineWidth: 2,
+                    shadowColor: '#000000',
+                    shadowBlur: 3,
+                    padding: 20,
+                    borderRadius: 0,
+                    textAlign: 'center',
+                    horizontal: 50,
+                    vertical: 85,
+                    italic: false,
+                    underline: false,
+                    background: true
+                },
+                youtube: {
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: 32,
+                    fontWeight: 600,
+                    textColor: '#ffffff',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 0.7,
+                    outlineColor: '#000000',
+                    outlineWidth: 3,
+                    shadowColor: '#000000',
+                    shadowBlur: 2,
+                    padding: 15,
+                    borderRadius: 5,
+                    textAlign: 'center',
+                    horizontal: 50,
+                    vertical: 88,
+                    italic: false,
+                    underline: false,
+                    background: true
+                },
+                cinema: {
+                    fontFamily: 'Georgia, serif',
+                    fontSize: 48,
+                    fontWeight: 400,
+                    textColor: '#f8f8f8',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 0.9,
+                    outlineColor: '#333333',
+                    outlineWidth: 1,
+                    shadowColor: '#000000',
+                    shadowBlur: 6,
+                    padding: 25,
+                    borderRadius: 0,
+                    textAlign: 'center',
+                    horizontal: 50,
+                    vertical: 82,
+                    italic: true,
+                    underline: false,
+                    background: true
+                },
+                minimal: {
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: 28,
+                    fontWeight: 400,
+                    textColor: '#ffffff',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 0.0,
+                    outlineColor: '#000000',
+                    outlineWidth: 1,
+                    shadowColor: '#000000',
+                    shadowBlur: 1,
+                    padding: 10,
+                    borderRadius: 0,
+                    textAlign: 'center',
+                    horizontal: 50,
+                    vertical: 90,
+                    italic: false,
+                    underline: false,
+                    background: false
+                }
+            };
+
+            const config = presets[preset];
+            if (!config) return;
+
+            // Apply all settings
+            document.getElementById('fontFamily').value = config.fontFamily;
+            document.getElementById('fontSize').value = config.fontSize;
+            document.getElementById('fontWeight').value = config.fontWeight;
+            document.getElementById('textColor').value = config.textColor;
+            document.getElementById('backgroundColor').value = config.backgroundColor;
+            document.getElementById('backgroundOpacity').value = config.backgroundOpacity;
+            document.getElementById('outlineColor').value = config.outlineColor;
+            document.getElementById('outlineWidth').value = config.outlineWidth;
+            document.getElementById('shadowColor').value = config.shadowColor;
+            document.getElementById('shadowBlur').value = config.shadowBlur;
+            document.getElementById('padding').value = config.padding;
+            document.getElementById('borderRadius').value = config.borderRadius;
+            document.getElementById('textAlign').value = config.textAlign;
+            document.getElementById('horizontal').value = config.horizontal;
+            document.getElementById('vertical').value = config.vertical;
+
+            // Update checkboxes
+            updateCheckboxState('italicCheck', config.italic);
+            updateCheckboxState('underlineCheck', config.underline);
+            updateCheckboxState('backgroundCheck', config.background);
+
+            // Update range displays
+            updateRangeDisplay();
+            updateSubtitleStyle();
+
+            // Add visual feedback
+            showNotification(`${preset.charAt(0).toUpperCase() + preset.slice(1)} preset applied!`);
+        }
+
+        function updateCheckboxState(id, checked) {
+            const element = document.getElementById(id);
+            if (checked) {
+                element.classList.add('checked');
+            } else {
+                element.classList.remove('checked');
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 2000);
+        }
+
+        // Export functions
+        async function exportASS() {
+            showSpinner('assSpinner');
+            
+            // Simulate processing time
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const styles = getCurrentStyles();
+            const assContent = generateASSContent(styles);
+            downloadFile('subtitle_style.ass', assContent);
+            
+            hideSpinner('assSpinner');
+            showNotification('ASS style exported successfully!');
+        }
+
+        async function exportSRT() {
+            showSpinner('srtSpinner');
+            
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            const styles = getCurrentStyles();
+            const srtContent = generateSRTContent(styles);
+            downloadFile('subtitle_style.srt', srtContent);
+            
+            hideSpinner('srtSpinner');
+            showNotification('SRT style exported successfully!');
+        }
+
+        function exportCSS() {
+            const styles = getCurrentStyles();
+            const cssContent = generateCSSContent(styles);
+            downloadFile('subtitle_styles.css', cssContent);
+            showNotification('CSS styles exported successfully!');
+        }
+
+        function getCurrentStyles() {
+            return {
+                fontFamily: document.getElementById('fontFamily').value,
+                fontSize: document.getElementById('fontSize').value,
+                fontWeight: document.getElementById('fontWeight').value,
+                fontStyle: document.getElementById('italicCheck').classList.contains('checked') ? 'italic' : 'normal',
+                textDecoration: document.getElementById('underlineCheck').classList.contains('checked') ? 'underline' : 'none',
+                textColor: document.getElementById('textColor').value,
+                backgroundColor: document.getElementById('backgroundColor').value,
+                backgroundOpacity: document.getElementById('backgroundOpacity').value,
+                outlineColor: document.getElementById('outlineColor').value,
+                outlineWidth: document.getElementById('outlineWidth').value,
+                shadowColor: document.getElementById('shadowColor').value,
+                shadowBlur: document.getElementById('shadowBlur').value,
+                padding: document.getElementById('padding').value,
+                borderRadius: document.getElementById('borderRadius').value,
+                textAlign: document.getElementById('textAlign').value,
+                horizontal: document.getElementById('horizontal').value,
+                vertical: document.getElementById('vertical').value,
+                hasBackground: document.getElementById('backgroundCheck').classList.contains('checked'),
+                subtitleText: document.getElementById('subtitleText').value
+            };
+        }
+
+        function generateASSContent(styles) {
+            const rgbColor = hexToRGB(styles.textColor);
+            const bgColor = hexToRGB(styles.backgroundColor);
+            
+            return `[Script Info]
+Title: SubEdit Pro Style
+ScriptType: v4.00+
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,${styles.fontFamily.split(',')[0]},${styles.fontSize},&H00${rgbColor},&H000000FF,&H00${hexToRGB(styles.outlineColor)},&H80${bgColor},${styles.fontWeight >= 600 ? 1 : 0},${styles.fontStyle === 'italic' ? 1 : 0},${styles.textDecoration === 'underline' ? 1 : 0},0,100,100,0,0,1,${styles.outlineWidth},${styles.shadowBlur},2,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:05.00,Default,,0,0,0,,${styles.subtitleText.replace(/\n/g, '\\N')}`;
+        }
+
+        function generateSRTContent(styles) {
+            return `1
+00:00:00,000 --> 00:00:05,000
+${styles.subtitleText}
+
+2
+00:00:05,000 --> 00:00:10,000
+<font face="${styles.fontFamily.split(',')[0]}" size="${styles.fontSize}" color="${styles.textColor}">${styles.subtitleText}</font>
+
+<!-- Style Information -->
+<!-- Font: ${styles.fontFamily} -->
+<!-- Size: ${styles.fontSize}px -->
+<!-- Color: ${styles.textColor} -->
+<!-- Background: ${styles.hasBackground ? styles.backgroundColor : 'transparent'} -->
+<!-- Alignment: ${styles.textAlign} -->`;
+        }
+
+        function generateCSSContent(styles) {
+            const bgColor = styles.hasBackground ? 
+                hexToRgba(styles.backgroundColor, styles.backgroundOpacity) : 'transparent';
+                
+            return `.subtitle {
+    font-family: ${styles.fontFamily};
+    font-size: ${styles.fontSize}px;
+    font-weight: ${styles.fontWeight};
+    font-style: ${styles.fontStyle};
+    text-decoration: ${styles.textDecoration};
+    color: ${styles.textColor};
+    background-color: ${bgColor};
+    text-shadow: ${styles.shadowBlur}px ${styles.shadowBlur}px ${styles.shadowBlur}px ${styles.shadowColor};
+    -webkit-text-stroke: ${styles.outlineWidth}px ${styles.outlineColor};
+    text-align: ${styles.textAlign};
+    padding: ${styles.padding}px;
+    border-radius: ${styles.borderRadius}px;
+    position: absolute;
+    left: ${styles.horizontal}%;
+    top: ${styles.vertical}%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    z-index: 1000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .subtitle {
+        font-size: ${Math.max(16, styles.fontSize * 0.7)}px;
+        padding: ${Math.max(8, styles.padding * 0.7)}px;
+    }
+}`;
+        }
+
+        function hexToRGB(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`.toUpperCase();
+        }
+
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showSpinner(id) {
+            document.getElementById(id).style.display = 'inline-block';
+        }
+
+        function hideSpinner(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // Project management
+        function saveProject() {
+            const project = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                styles: getCurrentStyles(),
+                metadata: {
+                    name: 'SubEdit Pro Project',
+                    description: 'Exported subtitle style configuration'
+                }
+            };
+            
+            const json = JSON.stringify(project, null, 2);
+            downloadFile('subtitle_project.json', json);
+            showNotification('Project saved successfully!');
+        }
+
+        function loadProject() {
+            const file = document.getElementById('loadProject').files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const project = JSON.parse(e.target.result);
+                    applyProjectSettings(project.styles);
+                    showNotification('Project loaded successfully!');
+                } catch (error) {
+                    showNotification('Error loading project file!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function applyProjectSettings(styles) {
+            Object.keys(styles).forEach(key => {
+                const element = document.getElementById(key);
+                if (element && element.type !== 'checkbox') {
+                    element.value = styles[key];
+                }
+            });
+
+            // Handle checkboxes
+            updateCheckboxState('italicCheck', styles.fontStyle === 'italic');
+            updateCheckboxState('underlineCheck', styles.textDecoration === 'underline');
+            updateCheckboxState('backgroundCheck', styles.hasBackground);
+
+            updateRangeDisplay();
+            updateSubtitleStyle();
+        }
+
+        // Range input display updates
+        function updateRangeDisplay() {
+            const ranges = [
+                { id: 'fontSize', display: 'fontSizeValue', suffix: 'px' },
+                { id: 'outlineWidth', display: 'outlineWidthValue', suffix: 'px' },
+                { id: 'shadowBlur', display: 'shadowBlurValue', suffix: 'px' },
+                { id: 'backgroundOpacity', display: 'backgroundOpacityValue', suffix: '' },
+                { id: 'padding', display: 'paddingValue', suffix: 'px' },
+                { id: 'borderRadius', display: 'borderRadiusValue', suffix: 'px' },
+                { id: 'horizontal', display: 'horizontalValue', suffix: '%' },
+                { id: 'vertical', display: 'verticalValue', suffix: '%' }
+            ];
+
+            ranges.forEach(({ id, display, suffix }) => {
+                const element = document.getElementById(id);
+                const displayElement = document.getElementById(display);
+                if (element && displayElement) {
+                    displayElement.textContent = element.value + suffix;
+                }
+            });
+        }
+
+        // Event listeners setup
+        function setupEventListeners() {
+            // Range inputs
+            const rangeInputs = document.querySelectorAll('.range-input');
+            rangeInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    updateRangeDisplay();
+                    updateSubtitleStyle();
+                });
+            });
+
+            // Other form controls
+            const formControls = document.querySelectorAll('.form-control:not(.range-input)');
+            formControls.forEach(control => {
+                control.addEventListener('input', updateSubtitleStyle);
+                control.addEventListener('change', updateSubtitleStyle);
+            });
+
+            // Checkboxes
+            ['italicCheck', 'underlineCheck', 'backgroundCheck'].forEach(id => {
+                document.getElementById(id).addEventListener('click', () => toggleCheckbox(id));
+            });
+
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            initCanvas();
+            setupEventListeners();
+            updateRangeDisplay();
+            updateSubtitleStyle();
+            
+            // Add welcome animation
+            setTimeout(() => {
+                showNotification('Welcome to SubEdit Pro! 🎬');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
