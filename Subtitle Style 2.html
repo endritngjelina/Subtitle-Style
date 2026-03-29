@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SubtitlePro - Advanced Style Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px;
+            height: 100vh;
+            gap: 0;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            background: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .properties-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2a5298;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2a5298;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 2px solid #2a5298;
+            padding-bottom: 5px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(42, 82, 152, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(42, 82, 152, 0.1);
+        }
+
+        .control-group h3 {
+            color: #2a5298;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .control-row:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            font-weight: 500;
+            color: #555;
+            min-width: 80px;
+            font-size: 13px;
+        }
+
+        input, select, textarea {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 35px;
+            padding: 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            flex: 1;
+        }
+
+        .video-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        .demo-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: linear-gradient(45deg, #1a1a1a 25%, transparent 25%), 
+                        linear-gradient(-45deg, #1a1a1a 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #1a1a1a 75%), 
+                        linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .subtitle-overlay {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 80%;
+            text-align: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+            user-select: none;
+            cursor: move;
+        }
+
+        .subtitle-text {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            transition: all 0.3s ease;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .controls-bar {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #666, #444);
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .preset-btn {
+            padding: 8px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #495057;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .preset-btn:hover {
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .timeline {
+            background: rgba(255, 255, 255, 0.1);
+            height: 40px;
+            margin: 0 15px;
+            border-radius: 20px;
+            position: relative;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .timeline-progress {
+            background: linear-gradient(90deg, #2a5298, #1e3c72);
+            height: 100%;
+            border-radius: 20px;
+            width: 30%;
+            position: relative;
+            transition: width 0.3s ease;
+        }
+
+        .timeline-handle {
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            cursor: grab;
+        }
+
+        .timeline-handle:active {
+            cursor: grabbing;
+        }
+
+        .export-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #2a5298;
+        }
+
+        .format-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .format-option {
+            padding: 12px;
+            background: rgba(42, 82, 152, 0.05);
+            border: 2px solid transparent;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .format-option:hover {
+            background: rgba(42, 82, 152, 0.1);
+        }
+
+        .format-option.selected {
+            background: rgba(42, 82, 152, 0.2);
+            border-color: #2a5298;
+            color: #2a5298;
+        }
+
+        .sample-subtitles {
+            margin-bottom: 20px;
+        }
+
+        .subtitle-item {
+            background: rgba(42, 82, 152, 0.05);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #2a5298;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .subtitle-item:hover {
+            background: rgba(42, 82, 152, 0.1);
+            transform: translateX(5px);
+        }
+
+        .subtitle-item.active {
+            background: rgba(42, 82, 152, 0.2);
+            border-left-color: #ff6b6b;
+        }
+
+        .subtitle-time {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .subtitle-content {
+            font-size: 13px;
+            color: #333;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(42, 82, 152, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(42, 82, 152, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(42, 82, 152, 0); }
+        }
+
+        .recording {
+            animation: pulse 2s infinite;
+        }
+
+        .advanced-controls {
+            display: none;
+        }
+
+        .advanced-controls.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toggle-advanced {
+            width: 100%;
+            margin-bottom: 15px;
+            text-align: center;
+            background: rgba(42, 82, 152, 0.1);
+            color: #2a5298;
+        }
+
+        .live-preview {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .position-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .position-btn {
+            aspect-ratio: 1;
+            background: rgba(42, 82, 152, 0.1);
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .position-btn:hover {
+            background: rgba(42, 82, 152, 0.3);
+        }
+
+        .position-btn.active {
+            background: #2a5298;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar - Style Controls -->
+        <div class="sidebar">
+            <h1>🎬 SubtitlePro</h1>
+            
+            <div class="control-group">
+                <h3>Text Styling</h3>
+                <div class="control-row">
+                    <label>Font:</label>
+                    <select id="fontFamily">
+                        <option value="Arial">Arial</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Tahoma">Tahoma</option>
+                        <option value="Trebuchet MS">Trebuchet MS</option>
+                        <option value="Impact">Impact</option>
+                        <option value="Comic Sans MS">Comic Sans MS</option>
+                    </select>
+                </div>
+                <div class="control-row">
+                    <label>Size:</label>
+                    <input type="range" id="fontSize" min="12" max="72" value="24">
+                    <span id="fontSizeValue">24px</span>
+                </div>
+                <div class="control-row">
+                    <label>Weight:</label>
+                    <select id="fontWeight">
+                        <option value="normal">Normal</option>
+                        <option value="bold">Bold</option>
+                        <option value="bolder">Bolder</option>
+                        <option value="lighter">Lighter</option>
+                    </select>
+                </div>
+                <div class="control-row">
+                    <label>Style:</label>
+                    <select id="fontStyle">
+                        <option value="normal">Normal</option>
+                        <option value="italic">Italic</option>
+                        <option value="oblique">Oblique</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Colors</h3>
+                <div class="control-row">
+                    <label>Text:</label>
+                    <input type="color" id="textColor" value="#ffffff">
+                </div>
+                <div class="control-row">
+                    <label>Background:</label>
+                    <input type="color" id="bgColor" value="#000000">
+                </div>
+                <div class="control-row">
+                    <label>BG Opacity:</label>
+                    <input type="range" id="bgOpacity" min="0" max="1" step="0.1" value="0.7">
+                    <span id="bgOpacityValue">70%</span>
+                </div>
+                <div class="control-row">
+                    <label>Border:</label>
+                    <input type="color" id="borderColor" value="#333333">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Effects</h3>
+                <div class="control-row">
+                    <label>Shadow:</label>
+                    <input type="range" id="textShadow" min="0" max="10" value="2">
+                    <span id="textShadowValue">2px</span>
+                </div>
+                <div class="control-row">
+                    <label>Border Width:</label>
+                    <input type="range" id="borderWidth" min="0" max="5" step="0.5" value="0">
+                    <span id="borderWidthValue">0px</span>
+                </div>
+                <div class="control-row">
+                    <label>Blur:</label>
+                    <input type="range" id="textBlur" min="0" max="5" step="0.5" value="0">
+                    <span id="textBlurValue">0px</span>
+                </div>
+            </div>
+
+            <button class="btn toggle-advanced" onclick="toggleAdvanced()">🔧 Advanced Settings</button>
+            
+            <div class="advanced-controls" id="advancedControls">
+                <div class="control-group">
+                    <h3>Spacing</h3>
+                    <div class="control-row">
+                        <label>Line Height:</label>
+                        <input type="range" id="lineHeight" min="0.8" max="2" step="0.1" value="1.4">
+                        <span id="lineHeightValue">1.4</span>
+                    </div>
+                    <div class="control-row">
+                        <label>Letter Spacing:</label>
+                        <input type="range" id="letterSpacing" min="-2" max="5" step="0.5" value="0">
+                        <span id="letterSpacingValue">0px</span>
+                    </div>
+                    <div class="control-row">
+                        <label>Padding:</label>
+                        <input type="range" id="padding" min="0" max="30" value="8">
+                        <span id="paddingValue">8px</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Animation</h3>
+                    <div class="control-row">
+                        <label>Transition:</label>
+                        <input type="range" id="transition" min="0" max="2" step="0.1" value="0.3">
+                        <span id="transitionValue">0.3s</span>
+                    </div>
+                    <div class="control-row">
+                        <label>Transform:</label>
+                        <select id="transform">
+                            <option value="none">None</option>
+                            <option value="scale(1.1)">Scale Up</option>
+                            <option value="scale(0.9)">Scale Down</option>
+                            <option value="skew(5deg)">Skew</option>
+                            <option value="rotate(2deg)">Rotate</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Quick Presets</h3>
+                <div class="preset-buttons">
+                    <div class="preset-btn" onclick="applyPreset('classic')">📺 Classic</div>
+                    <div class="preset-btn" onclick="applyPreset('modern')">✨ Modern</div>
+                    <div class="preset-btn" onclick="applyPreset('cinematic')">🎬 Cinematic</div>
+                    <div class="preset-btn" onclick="applyPreset('neon')">💫 Neon</div>
+                    <div class="preset-btn" onclick="applyPreset('minimal')">⚡ Minimal</div>
+                    <div class="preset-btn" onclick="applyPreset('retro')">📼 Retro</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content - Video Preview -->
+        <div class="main-content">
+            <div class="live-preview">
+                <strong>Live Preview Mode</strong><br>
+                <span id="previewStatus">Ready</span>
+            </div>
+            
+            <div class="video-container" id="videoContainer">
+                <div class="demo-video"></div>
+                <div class="subtitle-overlay" id="subtitleOverlay">
+                    <div class="subtitle-text" id="subtitleText">
+                        This is a sample subtitle text that shows how your styling will look in the final video.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-bar">
+                <button class="btn" onclick="playDemo()">▶️ Play Demo</button>
+                <button class="btn btn-secondary" onclick="resetStyles()">🔄 Reset</button>
+                <div class="timeline" onclick="seekTimeline(event)">
+                    <div class="timeline-progress" id="timelineProgress">
+                        <div class="timeline-handle" id="timelineHandle"></div>
+                    </div>
+                </div>
+                <button class="btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+                <button class="btn" onclick="captureFrame()">📷 Capture</button>
+            </div>
+        </div>
+
+        <!-- Right Panel - Properties & Export -->
+        <div class="properties-panel">
+            <h2>📍 Position</h2>
+            <div class="control-group">
+                <div class="control-row">
+                    <label>Horizontal:</label>
+                    <input type="range" id="positionX" min="0" max="100" value="50">
+                    <span id="positionXValue">50%</span>
+                </div>
+                <div class="control-row">
+                    <label>Vertical:</label>
+                    <input type="range" id="positionY" min="0" max="100" value="85">
+                    <span id="positionYValue">85%</span>
+                </div>
+                <div class="position-grid">
+                    <div class="position-btn" onclick="setPosition(25, 25)"></div>
+                    <div class="position-btn" onclick="setPosition(50, 25)"></div>
+                    <div class="position-btn" onclick="setPosition(75, 25)"></div>
+                    <div class="position-btn" onclick="setPosition(25, 50)"></div>
+                    <div class="position-btn" onclick="setPosition(50, 50)"></div>
+                    <div class="position-btn" onclick="setPosition(75, 50)"></div>
+                    <div class="position-btn" onclick="setPosition(25, 85)" class="active"></div>
+                    <div class="position-btn" onclick="setPosition(50, 85)"></div>
+                    <div class="position-btn" onclick="setPosition(75, 85)"></div>
+                </div>
+            </div>
+
+            <h2>📝 Sample Subtitles</h2>
+            <div class="sample-subtitles">
+                <div class="subtitle-item active" onclick="selectSubtitle(0)">
+                    <div class="subtitle-time">00:00:01 → 00:00:04</div>
+                    <div class="subtitle-content">Welcome to our professional subtitle editor!</div>
+                </div>
+                <div class="subtitle-item" onclick="selectSubtitle(1)">
+                    <div class="subtitle-time">00:00:05 → 00:00:08</div>
+                    <div class="subtitle-content">Create stunning subtitles with ease.</div>
+                </div>
+                <div class="subtitle-item" onclick="selectSubtitle(2)">
+                    <div class="subtitle-time">00:00:09 → 00:00:12</div>
+                    <div class="subtitle-content">Perfect for movies, tutorials, and presentations.</div>
+                </div>
+                <div class="subtitle-item" onclick="selectSubtitle(3)">
+                    <div class="subtitle-time">00:00:13 → 00:00:16</div>
+                    <div class="subtitle-content">Export in multiple formats!</div>
+                </div>
+            </div>
+
+            <div class="export-section">
+                <h2>💾 Export Options</h2>
+                <div class="format-selector">
+                    <div class="format-option selected" onclick="selectFormat('srt')" id="srtFormat">
+                        <strong>SRT</strong><br>
+                        <small>Universal format</small>
+                    </div>
+                    <div class="format-option" onclick="selectFormat('ass')" id="assFormat">
+                        <strong>ASS/SSA</strong><br>
+                        <small>Advanced styles</small>
+                    </div>
+                </div>
+                <div class="control-row">
+                    <label>Filename:</label>
+                    <input type="text" id="filename" value="subtitles" placeholder="Enter filename">
+                </div>
+                <button class="btn" onclick="exportSubtitles()" style="width: 100%; margin-top: 10px;">
+                    📤 Export Subtitles
+                </button>
+                <button class="btn btn-secondary" onclick="previewExport()" style="width: 100%; margin-top: 10px;">
+                    👀 Preview Export
+                </button>
+            </div>
+
+            <div class="control-group">
+                <h3>🎯 Performance</h3>
+                <div class="control-row">
+                    <label>Render Quality:</label>
+                    <select id="renderQuality">
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="control-row">
+                    <label>Auto-save:</label>
+                    <input type="checkbox" id="autosave" checked>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        let currentSubtitleIndex = 0;
+        let selectedFormat = 'srt';
+        let isPlaying = false;
+        let currentTime = 0;
+        let duration = 16; // 16 second demo
+        let playInterval;
+
+        const sampleSubtitles = [
+            {
+                start: 1, end: 4,
+                text: "Welcome to our professional subtitle editor!"
+            },
+            {
+                start: 5, end: 8,
+                text: "Create stunning subtitles with ease."
+            },
+            {
+                start: 9, end: 12,
+                text: "Perfect for movies, tutorials, and presentations."
+            },
+            {
+                start: 13, end: 16,
+                text: "Export in multiple formats!"
+            }
+        ];
+
+        // Initialize the application
+        function init() {
+            setupEventListeners();
+            updateSubtitlePreview();
+            setupDragAndDrop();
+            loadAutoSavedSettings();
+            updateTimelinePosition();
+        }
+
+        function setupEventListeners() {
+            // Font controls
+            document.getElementById('fontFamily').addEventListener('change', updateSubtitlePreview);
+            document.getElementById('fontSize').addEventListener('input', (e) => {
+                document.getElementById('fontSizeValue').textContent = e.target.value + 'px';
+                updateSubtitlePreview();
+            });
+            document.getElementById('fontWeight').addEventListener('change', updateSubtitlePreview);
+            document.getElementById('fontStyle').addEventListener('change', updateSubtitlePreview);
+
+            // Color controls
+            document.getElementById('textColor').addEventListener('input', updateSubtitlePreview);
+            document.getElementById('bgColor').addEventListener('input', updateSubtitlePreview);
+            document.getElementById('bgOpacity').addEventListener('input', (e) => {
+                document.getElementById('bgOpacityValue').textContent = Math.round(e.target.value * 100) + '%';
+                updateSubtitlePreview();
+            });
+            document.getElementById('borderColor').addEventListener('input', updateSubtitlePreview);
+
+            // Effects controls
+            document.getElementById('textShadow').addEventListener('input', (e) => {
+                document.getElementById('textShadowValue').textContent = e.target.value + 'px';
+                updateSubtitlePreview();
+            });
+            document.getElementById('borderWidth').addEventListener('input', (e) => {
+                document.getElementById('borderWidthValue').textContent = e.target.value + 'px';
+                updateSubtitlePreview();
+            });
+            document.getElementById('textBlur').addEventListener('input', (e) => {
+                document.getElementById('textBlurValue').textContent = e.target.value + 'px';
+                updateSubtitlePreview();
+            });
+
+            // Advanced controls
+            document.getElementById('lineHeight').addEventListener('input', (e) => {
+                document.getElementById('lineHeightValue').textContent = e.target.value;
+                updateSubtitlePreview();
+            });
+            document.getElementById('letterSpacing').addEventListener('input', (e) => {
+                document.getElementById('letterSpacingValue').textContent = e.target.value + 'px';
+                updateSubtitlePreview();
+            });
+            document.getElementById('padding').addEventListener('input', (e) => {
+                document.getElementById('paddingValue').textContent = e.target.value + 'px';
+                updateSubtitlePreview();
+            });
+            document.getElementById('transition').addEventListener('input', (e) => {
+                document.getElementById('transitionValue').textContent = e.target.value + 's';
+                updateSubtitlePreview();
+            });
+            document.getElementById('transform').addEventListener('change', updateSubtitlePreview);
+
+            // Position controls
+            document.getElementById('positionX').addEventListener('input', (e) => {
+                document.getElementById('positionXValue').textContent = e.target.value + '%';
+                updateSubtitlePreview();
+            });
+            document.getElementById('positionY').addEventListener('input', (e) => {
+                document.getElementById('positionYValue').textContent = e.target.value + '%';
+                updateSubtitlePreview();
+            });
+
+            // Auto-save functionality
+            document.getElementById('autosave').addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    saveSettings();
+                }
+            });
+
+            // Real-time preview updates
+            setInterval(() => {
+                if (document.getElementById('autosave').checked) {
+                    saveSettings();
+                }
+            }, 5000); // Auto-save every 5 seconds
+        }
+
+        function updateSubtitlePreview() {
+            const subtitleText = document.getElementById('subtitleText');
+            const overlay = document.getElementById('subtitleOverlay');
+            
+            // Get all style values
+            const fontFamily = document.getElementById('fontFamily').value;
+            const fontSize = document.getElementById('fontSize').value;
+            const fontWeight = document.getElementById('fontWeight').value;
+            const fontStyle = document.getElementById('fontStyle').value;
+            const textColor = document.getElementById('textColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+            const bgOpacity = document.getElementById('bgOpacity').value;
+            const borderColor = document.getElementById('borderColor').value;
+            const textShadow = document.getElementById('textShadow').value;
+            const borderWidth = document.getElementById('borderWidth').value;
+            const textBlur = document.getElementById('textBlur').value;
+            const lineHeight = document.getElementById('lineHeight').value;
+            const letterSpacing = document.getElementById('letterSpacing').value;
+            const padding = document.getElementById('padding').value;
+            const transition = document.getElementById('transition').value;
+            const transform = document.getElementById('transform').value;
+            const positionX = document.getElementById('positionX').value;
+            const positionY = document.getElementById('positionY').value;
+
+            // Apply styles to subtitle text
+            subtitleText.style.fontFamily = fontFamily;
+            subtitleText.style.fontSize = fontSize + 'px';
+            subtitleText.style.fontWeight = fontWeight;
+            subtitleText.style.fontStyle = fontStyle;
+            subtitleText.style.color = textColor;
+            subtitleText.style.lineHeight = lineHeight;
+            subtitleText.style.letterSpacing = letterSpacing + 'px';
+            subtitleText.style.padding = padding + 'px';
+            subtitleText.style.transition = `all ${transition}s ease`;
+            subtitleText.style.transform = transform === 'none' ? '' : transform;
+
+            // Background styling
+            const rgbaColor = hexToRgba(bgColor, bgOpacity);
+            subtitleText.style.backgroundColor = rgbaColor;
+
+            // Border styling
+            if (parseFloat(borderWidth) > 0) {
+                subtitleText.style.border = `${borderWidth}px solid ${borderColor}`;
+            } else {
+                subtitleText.style.border = 'none';
+            }
+
+            // Text shadow and effects
+            let shadowValue = '';
+            if (parseFloat(textShadow) > 0) {
+                shadowValue = `${textShadow}px ${textShadow}px ${textShadow * 2}px rgba(0,0,0,0.7)`;
+            }
+            if (parseFloat(textBlur) > 0) {
+                shadowValue += shadowValue ? `, 0 0 ${textBlur}px ${textColor}` : `0 0 ${textBlur}px ${textColor}`;
+            }
+            subtitleText.style.textShadow = shadowValue;
+
+            // Position the overlay
+            overlay.style.left = positionX + '%';
+            overlay.style.top = positionY + '%';
+            overlay.style.transform = `translate(-50%, -50%)`;
+
+            // Update preview status
+            document.getElementById('previewStatus').textContent = 'Updated';
+            setTimeout(() => {
+                document.getElementById('previewStatus').textContent = 'Ready';
+            }, 1000);
+        }
+
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function toggleAdvanced() {
+            const controls = document.getElementById('advancedControls');
+            controls.classList.toggle('show');
+        }
+
+        function applyPreset(presetName) {
+            const presets = {
+                classic: {
+                    fontFamily: 'Arial',
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                    textColor: '#ffffff',
+                    bgColor: '#000000',
+                    bgOpacity: 0.8,
+                    textShadow: 1,
+                    borderWidth: 0
+                },
+                modern: {
+                    fontFamily: 'Helvetica',
+                    fontSize: 24,
+                    fontWeight: 'normal',
+                    textColor: '#ffffff',
+                    bgColor: '#2a5298',
+                    bgOpacity: 0.9,
+                    textShadow: 0,
+                    borderWidth: 0,
+                    padding: 12,
+                    borderRadius: 6
+                },
+                cinematic: {
+                    fontFamily: 'Times New Roman',
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                    fontStyle: 'italic',
+                    textColor: '#f4f4f4',
+                    bgColor: '#1a1a1a',
+                    bgOpacity: 0.95,
+                    textShadow: 3,
+                    borderWidth: 1,
+                    borderColor: '#333333'
+                },
+                neon: {
+                    fontFamily: 'Impact',
+                    fontSize: 26,
+                    fontWeight: 'bold',
+                    textColor: '#00ffff',
+                    bgColor: '#000033',
+                    bgOpacity: 0.7,
+                    textShadow: 0,
+                    textBlur: 2,
+                    borderWidth: 1,
+                    borderColor: '#00ffff'
+                },
+                minimal: {
+                    fontFamily: 'Helvetica',
+                    fontSize: 18,
+                    fontWeight: 'normal',
+                    textColor: '#333333',
+                    bgColor: '#ffffff',
+                    bgOpacity: 0.95,
+                    textShadow: 0,
+                    borderWidth: 0,
+                    padding: 6
+                },
+                retro: {
+                    fontFamily: 'Courier New',
+                    fontSize: 22,
+                    fontWeight: 'bold',
+                    textColor: '#ffff00',
+                    bgColor: '#800080',
+                    bgOpacity: 0.8,
+                    textShadow: 2,
+                    borderWidth: 2,
+                    borderColor: '#ffff00'
+                }
+            };
+
+            const preset = presets[presetName];
+            if (!preset) return;
+
+            // Apply preset values to controls
+            Object.keys(preset).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = preset[key];
+                    // Trigger change event to update display values
+                    element.dispatchEvent(new Event(element.type === 'range' ? 'input' : 'change'));
+                }
+            });
+
+            updateSubtitlePreview();
+            
+            // Visual feedback
+            document.getElementById('previewStatus').textContent = `Applied ${presetName.charAt(0).toUpperCase() + presetName.slice(1)} Preset`;
+            setTimeout(() => {
+                document.getElementById('previewStatus').textContent = 'Ready';
+            }, 2000);
+        }
+
+        function setPosition(x, y) {
+            document.getElementById('positionX').value = x;
+            document.getElementById('positionY').value = y;
+            document.getElementById('positionXValue').textContent = x + '%';
+            document.getElementById('positionYValue').textContent = y + '%';
+            
+            // Update active position button
+            document.querySelectorAll('.position-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            updateSubtitlePreview();
+        }
+
+        function selectSubtitle(index) {
+            currentSubtitleIndex = index;
+            
+            // Update active subtitle item
+            document.querySelectorAll('.subtitle-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            // Update subtitle text
+            document.getElementById('subtitleText').textContent = sampleSubtitles[index].text;
+            
+            // Update timeline position based on subtitle timing
+            const subtitle = sampleSubtitles[index];
+            currentTime = subtitle.start;
+            updateTimelinePosition();
+        }
+
+        function selectFormat(format) {
+            selectedFormat = format;
+            document.querySelectorAll('.format-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById(format + 'Format').classList.add('selected');
+        }
+
+        function playDemo() {
+            const button = event.target;
+            
+            if (isPlaying) {
+                // Stop playback
+                clearInterval(playInterval);
+                isPlaying = false;
+                button.textContent = '▶️ Play Demo';
+                button.classList.remove('recording');
+            } else {
+                // Start playback
+                isPlaying = true;
+                button.textContent = '⏸️ Pause Demo';
+                button.classList.add('recording');
+                
+                playInterval = setInterval(() => {
+                    currentTime += 0.1;
+                    if (currentTime >= duration) {
+                        currentTime = 0;
+                    }
+                    
+                    updateTimelinePosition();
+                    updateActiveSubtitle();
+                }, 100);
+            }
+        }
+
+        function updateTimelinePosition() {
+            const progress = (currentTime / duration) * 100;
+            document.getElementById('timelineProgress').style.width = progress + '%';
+        }
+
+        function updateActiveSubtitle() {
+            const activeSubtitle = sampleSubtitles.find(sub => 
+                currentTime >= sub.start && currentTime <= sub.end
+            );
+            
+            if (activeSubtitle) {
+                const index = sampleSubtitles.indexOf(activeSubtitle);
+                if (index !== currentSubtitleIndex) {
+                    selectSubtitle(index);
+                }
+            }
+        }
+
+        function seekTimeline(event) {
+            const timeline = event.currentTarget;
+            const rect = timeline.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const timelineWidth = rect.width;
+            const newProgress = clickX / timelineWidth;
+            
+            currentTime = newProgress * duration;
+            updateTimelinePosition();
+            updateActiveSubtitle();
+        }
+
+        function resetStyles() {
+            // Reset all controls to default values
+            const defaults = {
+                fontFamily: 'Arial',
+                fontSize: 24,
+                fontWeight: 'normal',
+                fontStyle: 'normal',
+                textColor: '#ffffff',
+                bgColor: '#000000',
+                bgOpacity: 0.7,
+                borderColor: '#333333',
+                textShadow: 2,
+                borderWidth: 0,
+                textBlur: 0,
+                lineHeight: 1.4,
+                letterSpacing: 0,
+                padding: 8,
+                transition: 0.3,
+                transform: 'none',
+                positionX: 50,
+                positionY: 85
+            };
+
+            Object.keys(defaults).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = defaults[key];
+                    // Update display values
+                    const valueDisplay = document.getElementById(key + 'Value');
+                    if (valueDisplay) {
+                        let unit = '';
+                        if (key.includes('Size') || key.includes('Shadow') || key.includes('Width') || key.includes('Spacing') || key.includes('padding')) unit = 'px';
+                        if (key.includes('Opacity')) unit = '%';
+                        if (key.includes('position')) unit = '%';
+                        if (key === 'transition') unit = 's';
+                        if (key === 'bgOpacity') {
+                            valueDisplay.textContent = Math.round(defaults[key] * 100) + '%';
+                        } else {
+                            valueDisplay.textContent = defaults[key] + unit;
+                        }
+                    }
+                }
+            });
+
+            updateSubtitlePreview();
+            document.getElementById('previewStatus').textContent = 'Reset to Defaults';
+            setTimeout(() => {
+                document.getElementById('previewStatus').textContent = 'Ready';
+            }, 2000);
+        }
+
+        function toggleFullscreen() {
+            const container = document.getElementById('videoContainer');
+            
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().then(() => {
+                    document.getElementById('previewStatus').textContent = 'Fullscreen Mode';
+                }).catch(err => {
+                    console.error('Error entering fullscreen:', err);
+                });
+            } else {
+                document.exitFullscreen().then(() => {
+                    document.getElementById('previewStatus').textContent = 'Exited Fullscreen';
+                    setTimeout(() => {
+                        document.getElementById('previewStatus').textContent = 'Ready';
+                    }, 1000);
+                });
+            }
+        }
+
+        function captureFrame() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const container = document.getElementById('videoContainer');
+            
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            
+            // Create a simple capture simulation
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add checkerboard pattern
+            const size = 20;
+            for (let x = 0; x < canvas.width; x += size) {
+                for (let y = 0; y < canvas.height; y += size) {
+                    if ((Math.floor(x / size) + Math.floor(y / size)) % 2) {
+                        ctx.fillStyle = '#333';
+                        ctx.fillRect(x, y, size, size);
+                    }
+                }
+            }
+            
+            // Add subtitle text
+            const subtitle = document.getElementById('subtitleText');
+            const style = window.getComputedStyle(subtitle);
+            
+            ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+            ctx.fillStyle = style.color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const text = subtitle.textContent;
+            const x = canvas.width / 2;
+            const y = (canvas.height * document.getElementById('positionY').value) / 100;
+            
+            // Add background for text
+            const metrics = ctx.measureText(text);
+            const textWidth = metrics.width;
+            const textHeight = parseInt(style.fontSize);
+            
+            ctx.fillStyle = style.backgroundColor;
+            ctx.fillRect(x - textWidth/2 - 10, y - textHeight/2 - 5, textWidth + 20, textHeight + 10);
+            
+            ctx.fillStyle = style.color;
+            ctx.fillText(text, x, y);
+            
+            // Download the image
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `subtitle_frame_${Date.now()}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+            
+            document.getElementById('previewStatus').textContent = 'Frame Captured!';
+            setTimeout(() => {
+                document.getElementById('previewStatus').textContent = 'Ready';
+            }, 2000);
+        }
+
+        function exportSubtitles() {
+            const filename = document.getElementById('filename').value || 'subtitles';
+            let content = '';
+            
+            if (selectedFormat === 'srt') {
+                content = generateSRT();
+            } else if (selectedFormat === 'ass') {
+                content = generateASS();
+            }
+            
+            downloadFile(content, `${filename}.${selectedFormat}`);
+            
+            document.getElementById('previewStatus').textContent = `Exported ${selectedFormat.toUpperCase()}!`;
+            setTimeout(() => {
+                document.getElementById('previewStatus').textContent = 'Ready';
+            }, 2000);
+        }
+
+        function generateSRT() {
+            let srt = '';
+            sampleSubtitles.forEach((subtitle, index) => {
+                srt += `${index + 1}\n`;
+                srt += `${formatTime(subtitle.start)} --> ${formatTime(subtitle.end)}\n`;
+                srt += `${subtitle.text}\n\n`;
+            });
+            return srt;
+        }
+
+        function generateASS() {
+            const style = getCurrentStyle();
+            let ass = `[Script Info]\nTitle: SubtitlePro Export\nScriptType: v4.00+\n\n`;
+            ass += `[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n`;
+            ass += `Style: Default,${style.fontFamily},${style.fontSize},${style.textColor},${style.textColor},${style.borderColor},${style.bgColor},${style.bold},${style.italic},0,0,100,100,${style.letterSpacing},0,1,${style.borderWidth},${style.textShadow},2,10,10,10,1\n\n`;
+            ass += `[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n`;
+            
+            sampleSubtitles.forEach((subtitle, index) => {
+                ass += `Dialogue: 0,${formatTimeASS(subtitle.start)},${formatTimeASS(subtitle.end)},Default,,0,0,0,,${subtitle.text}\n`;
+            });
+            
+            return ass;
+        }
+
+        function getCurrentStyle() {
+            return {
+                fontFamily: document.getElementById('fontFamily').value,
+                fontSize: document.getElementById('fontSize').value,
+                textColor: document.getElementById('textColor').value,
+                bgColor: document.getElementById('bgColor').value,
+                borderColor: document.getElementById('borderColor').value,
+                bold: document.getElementById('fontWeight').value === 'bold' ? -1 : 0,
+                italic: document.getElementById('fontStyle').value === 'italic' ? -1 : 0,
+                borderWidth: document.getElementById('borderWidth').value,
+                textShadow: document.getElementById('textShadow').value,
+                letterSpacing: document.getElementById('letterSpacing').value
+            };
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            const ms = Math.floor((seconds % 1) * 1000);
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')},${ms.toString().padStart(3, '0')}`;
+        }
+
+        function formatTimeASS(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toFixed(2).padStart(5, '0')}`;
+        }
+
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function previewExport() {
+            const content = selectedFormat === 'srt' ? generateSRT() : generateASS();
+            const popup = window.open('', '_blank', 'width=600,height=400');
+            popup.document.write(`
+                <html>
+                <head><title>Export Preview - ${selectedFormat.toUpperCase()}</title></head>
+                <body style="font-family: monospace; padding: 20px; background: #f5f5f5;">
+                    <h2>Export Preview - ${selectedFormat.toUpperCase()} Format</h2>
+                    <pre style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 4px; overflow: auto;">${content}</pre>
+                </body>
+                </html>
+            `);
+        }
+
+        function setupDragAndDrop() {
+            const overlay = document.getElementById('subtitleOverlay');
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+
+            overlay.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                const rect = overlay.getBoundingClientRect();
+                const container = document.getElementById('videoContainer').getBoundingClientRect();
+                initialX = ((rect.left + rect.width / 2) - container.left) / container.width * 100;
+                initialY = ((rect.top + rect.height / 2) - container.top) / container.height * 100;
+                overlay.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const container = document.getElementById('videoContainer').getBoundingClientRect();
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                const newX = initialX + (deltaX / container.width * 100);
+                const newY = initialY + (deltaY / container.height * 100);
+                
+                const clampedX = Math.max(5, Math.min(95, newX));
+                const clampedY = Math.max(5, Math.min(95, newY));
+                
+                document.getElementById('positionX').value = clampedX;
+                document.getElementById('positionY').value = clampedY;
+                document.getElementById('positionXValue').textContent = Math.round(clampedX) + '%';
+                document.getElementById('positionYValue').textContent = Math.round(clampedY) + '%';
+                
+                updateSubtitlePreview();
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    overlay.style.cursor = 'move';
+                }
+            });
+        }
+
+        function saveSettings() {
+            const settings = {
+                fontFamily: document.getElementById('fontFamily').value,
+                fontSize: document.getElementById('fontSize').value,
+                fontWeight: document.getElementById('fontWeight').value,
+                fontStyle: document.getElementById('fontStyle').value,
+                textColor: document.getElementById('textColor').value,
+                bgColor: document.getElementById('bgColor').value,
+                bgOpacity: document.getElementById('bgOpacity').value,
+                borderColor: document.getElementById('borderColor').value,
+                textShadow: document.getElementById('textShadow').value,
+                borderWidth: document.getElementById('borderWidth').value,
+                textBlur: document.getElementById('textBlur').value,
+                positionX: document.getElementById('positionX').value,
+                positionY: document.getElementById('positionY').value
+            };
+            
+            // In a real application, this would save to a backend or localStorage
+            // For demo purposes, we'll just show a status message
+            document.getElementById('previewStatus').textContent = 'Settings Saved';
+            setTimeout(() => {
+                document.getElementById('previewStatus').textContent = 'Ready';
+            }, 1000);
+        }
+
+        function loadAutoSavedSettings() {
+            // In a real application, this would load from storage
+            // For demo, we'll just show it's ready
+            document.getElementById('previewStatus').textContent = 'Loaded Settings';
+            setTimeout(() => {
+                document.getElementById('previewStatus').textContent = 'Ready';
+            }, 1000);
+        }
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Handle window resize for responsive design
+        window.addEventListener('resize', () => {
+            updateSubtitlePreview();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 's':
+                        e.preventDefault();
+                        exportSubtitles();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        resetStyles();
+                        break;
+                    case ' ':
+                        e.preventDefault();
+                        playDemo();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
