@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subtitle Style Editor Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #06d6a0;
+            --danger: #ef476f;
+            --warning: #ffd166;
+            --dark: #1e1e2e;
+            --darker: #121218;
+            --light: #f8f9fa;
+            --gray: #8a8a9a;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --sidebar-bg: rgba(25, 25, 45, 0.95);
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 25px;
+            min-height: calc(100vh - 40px);
+        }
+
+        /* Header Styles */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(30, 30, 46, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo i {
+            font-size: 2.2rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent), #05b38c);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #e83a5e);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: var(--sidebar-bg);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            height: fit-content;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--light);
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section-title i {
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.15);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--gray);
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .control-row.triple {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: var(--transition);
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--light);
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 45px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.5);
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .preset-btn {
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--gray);
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            background: rgba(67, 97, 238, 0.15);
+            border-color: var(--primary);
+            color: var(--light);
+        }
+
+        .preset-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .export-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .video-container {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .video-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .video-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--light);
+        }
+
+        .video-stats {
+            display: flex;
+            gap: 15px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .demo-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+
+        .subtitle-overlay {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            max-width: 90%;
+            z-index: 10;
+            transition: var(--transition);
+            padding: 15px 25px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .subtitle-text {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            line-height: 1.4;
+        }
+
+        .timeline {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 25px;
+        }
+
+        .timeline-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .timeline-progress {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: width 0.1s ease;
+        }
+
+        .timeline-thumb {
+            position: absolute;
+            top: -7px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transform: translateX(-50%);
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .video-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .control-panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .advanced-controls {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .advanced-controls.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 1000px; }
+        }
+
+        .color-picker-wrapper {
+            position: relative;
+        }
+
+        .color-presets {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .color-preset {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .color-preset:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--dark);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        /* AI Features Panel */
+        .ai-panel {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 10px;
+        }
+
+        .ai-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .ai-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .ai-feature {
+            background: rgba(6, 214, 160, 0.1);
+            border: 1px solid rgba(6, 214, 160, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .ai-feature:hover {
+            transform: translateY(-3px);
+            background: rgba(6, 214, 160, 0.15);
+            box-shadow: 0 5px 15px rgba(6, 214, 160, 0.2);
+        }
+
+        .ai-feature i {
+            font-size: 24px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                max-height: none;
+            }
+            
+            .video-wrapper {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .video-wrapper {
+                height: 300px;
+            }
+            
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="logo">
+            <i class="fas fa-closed-captioning"></i>
+            <span>Subtitle Style Editor Pro</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn">
+                <i class="fas fa-cloud-upload-alt"></i>
+                Save Project
+            </button>
+            <button class="btn btn-outline">
+                <i class="fas fa-share-alt"></i>
+                Share
+            </button>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-text-height"></i>
+                    Subtitle Text
+                </h3>
+                <div class="control-group">
+                    <label>Preview Text</label>
+                    <textarea id="subtitleText" placeholder="Enter your subtitle text here..." rows="3">Welcome to the future of subtitle editing. Experience professional-grade styling with real-time preview.</textarea>
+                </div>
+                
+                <div class="ai-panel">
+                    <div class="ai-title">
+                        <i class="fas fa-robot"></i>
+                        AI-Powered Features
+                    </div>
+                    <div class="ai-features">
+                        <div class="ai-feature" onclick="generateAICaptions()">
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                            <div>Auto-Generate Captions</div>
+                        </div>
+                        <div class="ai-feature" onclick="translateSubtitles()">
+                            <i class="fas fa-language"></i>
+                            <div>Translate Subtitles</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-font"></i>
+                    Typography
+                </h3>
+                <div class="control-group">
+                    <label>Font Family</label>
+                    <select id="fontFamily">
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Helvetica, sans-serif">Helvetica</option>
+                        <option value="'Segoe UI', sans-serif" selected>Segoe UI</option>
+                        <option value="Roboto, sans-serif">Roboto</option>
+                        <option value="Montserrat, sans-serif">Montserrat</option>
+                        <option value="Open Sans, sans-serif">Open Sans</option>
+                    </select>
+                </div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Font Size (px)</label>
+                        <input type="number" id="fontSize" value="32" min="12" max="120">
+                    </div>
+                    <div class="control-group">
+                        <label>Line Height</label>
+                        <input type="number" id="lineHeight" value="1.2" min="0.8" max="3" step="0.1">
+                    </div>
+                </div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Font Weight</label>
+                        <select id="fontWeight">
+                            <option value="300">Light</option>
+                            <option value="400">Normal</option>
+                            <option value="500">Medium</option>
+                            <option value="600">Semi-Bold</option>
+                            <option value="700" selected>Bold</option>
+                            <option value="800">Extra Bold</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Letter Spacing</label>
+                        <input type="number" id="letterSpacing" value="0" min="-5" max="20" step="0.5">
+                    </div>
+                </div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="italic">
+                            <label for="italic">Italic</label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="underline">
+                            <label for="underline">Underline</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-palette"></i>
+                    Colors & Effects
+                </h3>
+                <div class="control-group">
+                    <label>Text Color</label>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="textColor" value="#ffffff">
+                        <div class="color-presets">
+                            <div class="color-preset" style="background: #ffffff" onclick="setColor('textColor', '#ffffff')"></div>
+                            <div class="color-preset" style="background: #ff6b6b" onclick="setColor('textColor', '#ff6b6b')"></div>
+                            <div class="color-preset" style="background: #4cc9f0" onclick="setColor('textColor', '#4cc9f0')"></div>
+                            <div class="color-preset" style="background: #b5179e" onclick="setColor('textColor', '#b5179e')"></div>
+                            <div class="color-preset" style="background: #06d6a0" onclick="setColor('textColor', '#06d6a0')"></div>
+                            <div class="color-preset" style="background: #ffd166" onclick="setColor('textColor', '#ffd166')"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Outline Color</label>
+                    <input type="color" id="outlineColor" value="#000000">
+                </div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Outline Width (px)</label>
+                        <input type="number" id="outlineWidth" value="2" min="0" max="10">
+                    </div>
+                    <div class="control-group">
+                        <label>Shadow Blur (px)</label>
+                        <input type="number" id="shadowBlur" value="4" min="0" max="20">
+                    </div>
+                </div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Shadow X Offset</label>
+                        <input type="number" id="shadowX" value="2" min="-20" max="20">
+                    </div>
+                    <div class="control-group">
+                        <label>Shadow Y Offset</label>
+                        <input type="number" id="shadowY" value="2" min="-20" max="20">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Shadow Color</label>
+                    <input type="color" id="shadowColor" value="#000000">
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-object-group"></i>
+                    Background
+                </h3>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="enableBackground" checked>
+                    <label for="enableBackground">Enable Background</label>
+                </div>
+                <div class="control-group">
+                    <label>Background Color</label>
+                    <input type="color" id="backgroundColor" value="#000000">
+                </div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Opacity (%)</label>
+                        <input type="range" id="backgroundOpacity" value="80" min="0" max="100">
+                    </div>
+                    <div class="control-group">
+                        <label>Blur (px)</label>
+                        <input type="number" id="backgroundBlur" value="10" min="0" max="50">
+                    </div>
+                </div>
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Padding H (px)</label>
+                        <input type="number" id="paddingH" value="20" min="0" max="100">
+                    </div>
+                    <div class="control-group">
+                        <label>Padding V (px)</label>
+                        <input type="number" id="paddingV" value="10" min="0" max="100">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Border Radius (px)</label>
+                    <input type="number" id="borderRadius" value="8" min="0" max="50">
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-layer-group"></i>
+                    Style Presets
+                </h3>
+                <div class="preset-buttons">
+                    <button class="preset-btn" onclick="applyPreset('netflix')">Netflix</button>
+                    <button class="preset-btn" onclick="applyPreset('youtube')">YouTube</button>
+                    <button class="preset-btn" onclick="applyPreset('cinema')">Cinema</button>
+                    <button class="preset-btn" onclick="applyPreset('modern')">Modern</button>
+                    <button class="preset-btn" onclick="applyPreset('neon')">Neon</button>
+                    <button class="preset-btn" onclick="applyPreset('minimal')">Minimal</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-file-export"></i>
+                    Export Options
+                </h3>
+                <div class="export-buttons">
+                    <button class="btn btn-success" onclick="exportASS()">
+                        <i class="fas fa-file-export"></i>
+                        Export ASS
+                    </button>
+                    <button class="btn btn-outline" onclick="exportSRT()">
+                        <i class="fas fa-file-export"></i>
+                        Export SRT
+                    </button>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn btn-outline" onclick="exportProject()">
+                        <i class="fas fa-download"></i>
+                        Save Project
+                    </button>
+                    <button class="btn btn-outline" onclick="importProject()">
+                        <i class="fas fa-upload"></i>
+                        Load Project
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="video-container">
+                <div class="video-header">
+                    <div class="video-title">Big Buck Bunny - Demo Video</div>
+                    <div class="video-stats">
+                        <span><i class="fas fa-eye"></i> 1.2M views</span>
+                        <span><i class="fas fa-clock"></i> 10:34</span>
+                    </div>
+                </div>
+                
+                <div class="video-wrapper">
+                    <video class="demo-video" loop muted>
+                        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="subtitle-overlay" id="subtitleOverlay">
+                        <div class="subtitle-text" id="subtitleTextElement">Welcome to the future of subtitle editing. Experience professional-grade styling with real-time preview.</div>
+                    </div>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-track" id="timeline">
+                        <div class="timeline-progress" id="timelineProgress"></div>
+                        <div class="timeline-thumb" id="timelineThumb"></div>
+                    </div>
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span>
+                        <span id="totalTime">10:34</span>
+                    </div>
+                </div>
+
+                <div class="video-controls">
+                    <button class="btn" onclick="togglePlayPause()" id="playPauseBtn">
+                        <i class="fas fa-play"></i>
+                        Play
+                    </button>
+                    <button class="btn btn-outline" onclick="toggleMute()" id="muteBtn">
+                        <i class="fas fa-volume-up"></i>
+                        Sound
+                    </button>
+                    <button class="btn btn-outline" onclick="resetStyles()">
+                        <i class="fas fa-undo"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <h3 class="section-title">
+                    <i class="fas fa-cogs"></i>
+                    Advanced Controls
+                </h3>
+                <button class="btn btn-outline" onclick="toggleAdvanced()" id="advancedToggle">
+                    <i class="fas fa-chevron-down"></i>
+                    Show Advanced
+                </button>
+                
+                <div class="advanced-controls" id="advancedControls">
+                    <div class="sidebar-section">
+                        <h4 class="section-title">
+                            <i class="fas fa-film"></i>
+                            Animation & Timing
+                        </h4>
+                        <div class="control-group">
+                            <label>Fade In Duration (ms)</label>
+                            <input type="number" id="fadeInDuration" value="500" min="0" max="5000" step="100">
+                        </div>
+                        <div class="control-group">
+                            <label>Fade Out Duration (ms)</label>
+                            <input type="number" id="fadeOutDuration" value="500" min="0" max="5000" step="100">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label>Animation Style</label>
+                                <select id="animationStyle">
+                                    <option value="none">None</option>
+                                    <option value="slideUp">Slide Up</option>
+                                    <option value="slideDown">Slide Down</option>
+                                    <option value="slideLeft">Slide Left</option>
+                                    <option value="slideRight">Slide Right</option>
+                                    <option value="scale">Scale</option>
+                                    <option value="bounce">Bounce</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Animation Speed</label>
+                                <input type="range" id="animationSpeed" value="1" min="0.1" max="3" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h4 class="section-title">
+                            <i class="fas fa-cube"></i>
+                            3D Effects & Transforms
+                        </h4>
+                        <div class="control-row triple">
+                            <div class="control-group">
+                                <label>Rotate X (°)</label>
+                                <input type="number" id="rotateX" value="0" min="-180" max="180">
+                            </div>
+                            <div class="control-group">
+                                <label>Rotate Y (°)</label>
+                                <input type="number" id="rotateY" value="0" min="-180" max="180">
+                            </div>
+                            <div class="control-group">
+                                <label>Rotate Z (°)</label>
+                                <input type="number" id="rotateZ" value="0" min="-180" max="180">
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label>Scale X</label>
+                                <input type="number" id="scaleX" value="1" min="0.1" max="3" step="0.1">
+                            </div>
+                            <div class="control-group">
+                                <label>Scale Y</label>
+                                <input type="number" id="scaleY" value="1" min="0.1" max="3" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h4 class="section-title">
+                            <i class="fas fa-history"></i>
+                            Version Control
+                        </h4>
+                        <div class="control-row">
+                            <button class="btn btn-outline" onclick="undoChange()">
+                                <i class="fas fa-undo"></i>
+                                Undo
+                            </button>
+                            <button class="btn btn-outline" onclick="redoChange()">
+                                <i class="fas fa-redo"></i>
+                                Redo
+                            </button>
+                        </div>
+                        <div class="control-group" style="margin-top: 15px;">
+                            <label>History Snapshot</label>
+                            <input type="text" id="snapshotName" placeholder="Enter snapshot name">
+                        </div>
+                        <button class="btn" onclick="createSnapshot()">
+                            <i class="fas fa-camera"></i>
+                            Create Snapshot
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span>Settings applied successfully!</span>
+    </div>
+
+    <script>
+        // Global variables
+        let video, timeline, timelineProgress, timelineThumb, subtitleOverlay;
+        let isPlaying = false;
+        let isDragging = false;
+        let history = [];
+        let historyIndex = -1;
+        let animationFrameId;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeElements();
+            setupEventListeners();
+            updateSubtitleStyle();
+            saveToHistory();
+        });
+
+        function initializeElements() {
+            video = document.querySelector('.demo-video');
+            timeline = document.getElementById('timeline');
+            timelineProgress = document.getElementById('timelineProgress');
+            timelineThumb = document.getElementById('timelineThumb');
+            subtitleOverlay = document.getElementById('subtitleOverlay');
+
+            // Load video
+            video.addEventListener('loadedmetadata', function() {
+                updateTimeDisplay();
+            });
+
+            video.addEventListener('timeupdate', function() {
+                if (!isDragging) {
+                    updateTimeline();
+                    updateTimeDisplay();
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Text input
+            document.getElementById('subtitleText').addEventListener('input', function() {
+                document.getElementById('subtitleTextElement').textContent = this.value;
+                updateSubtitleStyle();
+            });
+
+            // All style inputs
+            const styleInputs = [
+                'fontFamily', 'fontSize', 'lineHeight', 'fontWeight', 'letterSpacing',
+                'textColor', 'outlineColor', 'outlineWidth', 'shadowBlur', 'shadowX',
+                'shadowY', 'shadowColor', 'backgroundColor', 'backgroundOpacity',
+                'backgroundBlur', 'paddingH', 'paddingV', 'borderRadius'
+            ];
+
+            styleInputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        updateSubtitleStyle();
+                        saveToHistory();
+                    });
+                }
+            });
+
+            // Checkboxes
+            const checkboxes = [
+                'italic', 'underline', 'enableBackground'
+            ];
+
+            checkboxes.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', function() {
+                        updateSubtitleStyle();
+                        saveToHistory();
+                    });
+                }
+            });
+
+            // Timeline interactions
+            timeline.addEventListener('click', handleTimelineClick);
+            timelineThumb.addEventListener('mousedown', handleTimelineMouseDown);
+            document.addEventListener('mousemove', handleTimelineMouseMove);
+            document.addEventListener('mouseup', handleTimelineMouseUp);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboard);
+        }
+
+        function updateSubtitleStyle() {
+            const subtitleText = document.getElementById('subtitleTextElement');
+            if (!subtitleText) return;
+
+            // Typography
+            subtitleText.style.fontFamily = document.getElementById('fontFamily').value;
+            subtitleText.style.fontSize = document.getElementById('fontSize').value + 'px';
+            subtitleText.style.lineHeight = document.getElementById('lineHeight').value;
+            subtitleText.style.fontWeight = document.getElementById('fontWeight').value;
+            subtitleText.style.letterSpacing = document.getElementById('letterSpacing').value + 'px';
+
+            // Text decorations
+            subtitleText.style.fontStyle = document.getElementById('italic').checked ? 'italic' : 'normal';
+            subtitleText.style.textDecoration = document.getElementById('underline').checked ? 'underline' : 'none';
+
+            // Colors and effects
+            subtitleText.style.color = document.getElementById('textColor').value;
+            subtitleText.style.textShadow = `
+                ${document.getElementById('shadowX').value}px 
+                ${document.getElementById('shadowY').value}px 
+                ${document.getElementById('shadowBlur').value}px 
+                ${document.getElementById('shadowColor').value}
+            `;
+            subtitleText.style.textStroke = `
+                ${document.getElementById('outlineWidth').value}px 
+                ${document.getElementById('outlineColor').value}
+            `;
+
+            // Background styling
+            updateBackgroundStyle();
+        }
+
+        function updateBackgroundStyle() {
+            const enableBackground = document.getElementById('enableBackground').checked;
+            const backgroundColor = document.getElementById('backgroundColor').value;
+            const backgroundOpacity = document.getElementById('backgroundOpacity').value / 100;
+            const backgroundBlur = document.getElementById('backgroundBlur').value + 'px';
+            const paddingH = document.getElementById('paddingH').value + 'px';
+            const paddingV = document.getElementById('paddingV').value + 'px';
+            const borderRadius = document.getElementById('borderRadius').value + 'px';
+
+            if (enableBackground) {
+                // Convert hex to rgba
+                const r = parseInt(backgroundColor.substr(1, 2), 16);
+                const g = parseInt(backgroundColor.substr(3, 2), 16);
+                const b = parseInt(backgroundColor.substr(5, 2), 16);
+
+                subtitleOverlay.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${backgroundOpacity})`;
+                subtitleOverlay.style.backdropFilter = `blur(${backgroundBlur})`;
+                subtitleOverlay.style.padding = `${paddingV} ${paddingH}`;
+                subtitleOverlay.style.borderRadius = borderRadius;
+            } else {
+                subtitleOverlay.style.backgroundColor = 'transparent';
+                subtitleOverlay.style.backdropFilter = 'none';
+                subtitleOverlay.style.padding = '0';
+                subtitleOverlay.style.borderRadius = '0';
+            }
+        }
+
+        function applyPreset(presetName) {
+            // Remove active class from all preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            const presets = {
+                netflix: {
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: 28,
+                    fontWeight: 700,
+                    textColor: '#ffffff',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 75,
+                    outlineWidth: 0,
+                    shadowBlur: 2,
+                    shadowX: 1,
+                    shadowY: 1,
+                    paddingH: 16,
+                    paddingV: 8,
+                    borderRadius: 4
+                },
+                youtube: {
+                    fontFamily: 'Roboto, sans-serif',
+                    fontSize: 24,
+                    fontWeight: 400,
+                    textColor: '#ffffff',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 80,
+                    outlineWidth: 0,
+                    shadowBlur: 0,
+                    paddingH: 12,
+                    paddingV: 6,
+                    borderRadius: 2
+                },
+                cinema: {
+                    fontFamily: 'Times New Roman, serif',
+                    fontSize: 32,
+                    fontWeight: 400,
+                    textColor: '#f5f5f5',
+                    backgroundColor: '#1a1a1a',
+                    backgroundOpacity: 90,
+                    outlineWidth: 0,
+                    shadowBlur: 4,
+                    shadowX: 2,
+                    shadowY: 2,
+                    paddingH: 24,
+                    paddingV: 12,
+                    borderRadius: 0
+                },
+                modern: {
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontSize: 30,
+                    fontWeight: 600,
+                    textColor: '#ffffff',
+                    backgroundColor: '#007aff',
+                    backgroundOpacity: 85,
+                    outlineWidth: 0,
+                    shadowBlur: 6,
+                    shadowX: 0,
+                    shadowY: 3,
+                    paddingH: 20,
+                    paddingV: 10,
+                    borderRadius: 12
+                },
+                neon: {
+                    fontFamily: 'Impact, sans-serif',
+                    fontSize: 34,
+                    fontWeight: 900,
+                    textColor: '#00ff41',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 70,
+                    outlineColor: '#00ff41',
+                    outlineWidth: 1,
+                    shadowBlur: 10,
+                    shadowX: 0,
+                    shadowY: 0,
+                    shadowColor: '#00ff41',
+                    paddingH: 22,
+                    paddingV: 11,
+                    borderRadius: 8
+                },
+                minimal: {
+                    fontFamily: 'Helvetica, sans-serif',
+                    fontSize: 26,
+                    fontWeight: 300,
+                    textColor: '#ffffff',
+                    backgroundColor: 'transparent',
+                    backgroundOpacity: 0,
+                    outlineWidth: 0,
+                    shadowBlur: 0,
+                    paddingH: 0,
+                    paddingV: 0,
+                    borderRadius: 0
+                }
+            };
+
+            const preset = presets[presetName];
+            if (!preset) return;
+
+            // Apply preset values
+            Object.keys(preset).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = preset[key];
+                }
+            });
+
+            // Check/uncheck background based on preset
+            const enableBg = presetName !== 'minimal';
+            document.getElementById('enableBackground').checked = enableBg;
+
+            updateSubtitleStyle();
+            showToast(`${presetName.charAt(0).toUpperCase() + presetName.slice(1)} preset applied`);
+            saveToHistory();
+        }
+
+        function togglePlayPause() {
+            if (isPlaying) {
+                video.pause();
+                document.getElementById('playPauseBtn').innerHTML = `<i class="fas fa-play"></i> Play`;
+            } else {
+                video.play();
+                document.getElementById('playPauseBtn').innerHTML = `<i class="fas fa-pause"></i> Pause`;
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function toggleMute() {
+            video.muted = !video.muted;
+            const muteBtn = document.getElementById('muteBtn');
+            if (video.muted) {
+                muteBtn.innerHTML = `<i class="fas fa-volume-mute"></i> Muted`;
+            } else {
+                muteBtn.innerHTML = `<i class="fas fa-volume-up"></i> Sound`;
+            }
+        }
+
+        function resetStyles() {
+            // Reset all inputs to default values
+            document.getElementById('subtitleText').value = 'Welcome to the future of subtitle editing. Experience professional-grade styling with real-time preview.';
+            document.getElementById('fontFamily').value = 'Arial, sans-serif';
+            document.getElementById('fontSize').value = '32';
+            document.getElementById('lineHeight').value = '1.2';
+            document.getElementById('fontWeight').value = '700';
+            document.getElementById('letterSpacing').value = '0';
+            document.getElementById('textColor').value = '#ffffff';
+            document.getElementById('outlineColor').value = '#000000';
+            document.getElementById('outlineWidth').value = '2';
+            document.getElementById('shadowBlur').value = '4';
+            document.getElementById('shadowX').value = '2';
+            document.getElementById('shadowY').value = '2';
+            document.getElementById('shadowColor').value = '#000000';
+            document.getElementById('backgroundColor').value = '#000000';
+            document.getElementById('backgroundOpacity').value = '80';
+            document.getElementById('backgroundBlur').value = '10';
+            document.getElementById('paddingH').value = '20';
+            document.getElementById('paddingV').value = '10';
+            document.getElementById('borderRadius').value = '8';
+
+            // Reset checkboxes
+            document.getElementById('italic').checked = false;
+            document.getElementById('underline').checked = false;
+            document.getElementById('enableBackground').checked = true;
+
+            // Remove active class from preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+
+            updateSubtitleStyle();
+            showToast('Styles reset to default');
+            saveToHistory();
+        }
+
+        function toggleAdvanced() {
+            const advancedControls = document.getElementById('advancedControls');
+            const toggleButton = document.getElementById('advancedToggle');
+            
+            if (advancedControls.classList.contains('show')) {
+                advancedControls.classList.remove('show');
+                toggleButton.innerHTML = `<i class="fas fa-chevron-down"></i> Show Advanced`;
+            } else {
+                advancedControls.classList.add('show');
+                toggleButton.innerHTML = `<i class="fas fa-chevron-up"></i> Hide Advanced`;
+            }
+        }
+
+        function handleTimelineClick(e) {
+            if (isDragging) return;
+            const rect = timeline.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const percentage = clickX / rect.width;
+            video.currentTime = percentage * video.duration;
+            updateTimeline();
+            updateTimeDisplay();
+        }
+
+        function handleTimelineMouseDown(e) {
+            isDragging = true;
+            e.preventDefault();
+        }
+
+        function handleTimelineMouseMove(e) {
+            if (!isDragging) return;
+            const rect = timeline.getBoundingClientRect();
+            const moveX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+            const percentage = moveX / rect.width;
+            video.currentTime = percentage * video.duration;
+            updateTimeline();
+            updateTimeDisplay();
+        }
+
+        function handleTimelineMouseUp() {
+            isDragging = false;
+        }
+
+        function updateTimeline() {
+            if (!video.duration) return;
+            const percentage = (video.currentTime / video.duration) * 100;
+            timelineProgress.style.width = percentage + '%';
+            timelineThumb.style.left = percentage + '%';
+        }
+
+        function updateTimeDisplay() {
+            const current = formatTime(video.currentTime || 0);
+            const total = formatTime(video.duration || 0);
+            document.getElementById('currentTime').textContent = current;
+            document.getElementById('totalTime').textContent = total;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function handleKeyboard(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                return;
+            }
+
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    togglePlayPause();
+                    break;
+                case 'm':
+                case 'M':
+                    toggleMute();
+                    break;
+                case 'r':
+                case 'R':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        resetStyles();
+                    }
+                    break;
+                case 'ArrowLeft':
+                    video.currentTime = Math.max(0, video.currentTime - 5);
+                    break;
+                case 'ArrowRight':
+                    video.currentTime = Math.min(video.duration, video.currentTime + 5);
+                    break;
+                case 'z':
+                case 'Z':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        undoChange();
+                    }
+                    break;
+                case 'y':
+                case 'Y':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        redoChange();
+                    }
+                    break;
+            }
+        }
+
+        function setColor(inputId, color) {
+            document.getElementById(inputId).value = color;
+            updateSubtitleStyle();
+            saveToHistory();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.querySelector('span').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function exportASS() {
+            showToast('ASS file exported successfully!');
+            // In a real app, this would generate and download the file
+        }
+
+        function exportSRT() {
+            showToast('SRT file exported successfully!');
+        }
+
+        function exportProject() {
+            const projectName = prompt("Enter a name for your project:", "subtitle-project");
+            if (projectName) {
+                showToast(`Project "${projectName}" saved successfully!`);
+                // In a real app, this would save to localStorage or a backend
+            }
+        }
+
+        function importProject() {
+            showToast("Project imported successfully!");
+            // In a real app, this would load from storage
+        }
+
+        function generateAICaptions() {
+            showToast("AI is generating captions...");
+            // Simulate API call
+            setTimeout(() => {
+                document.getElementById('subtitleText').value = "This is an AI-generated subtitle. The video showcases beautiful nature scenes with animals playing in a meadow.";
+                document.getElementById('subtitleTextElement').textContent = "This is an AI-generated subtitle. The video showcases beautiful nature scenes with animals playing in a meadow.";
+                showToast("AI captions generated successfully!");
+                updateSubtitleStyle();
+                saveToHistory();
+            }, 2000);
+        }
+
+        function translateSubtitles() {
+            showToast("Translating subtitles to Spanish...");
+            // Simulate translation
+            setTimeout(() => {
+                document.getElementById('subtitleText').value = "Bienvenido al futuro de la edición de subtítulos. Experimente un estilo de calidad profesional con vista previa en tiempo real.";
+                document.getElementById('subtitleTextElement').textContent = "Bienvenido al futuro de la edición de subtítulos. Experimente un estilo de calidad profesional con vista previa en tiempo real.";
+                showToast("Subtitles translated to Spanish!");
+                updateSubtitleStyle();
+                saveToHistory();
+            }, 2000);
+        }
+
+        // History functions for undo/redo
+        function saveToHistory() {
+            // Save current state
+            const state = {
+                subtitleText: document.getElementById('subtitleText').value,
+                fontFamily: document.getElementById('fontFamily').value,
+                fontSize: document.getElementById('fontSize').value,
+                fontWeight: document.getElementById('fontWeight').value,
+                textColor: document.getElementById('textColor').value,
+                outlineWidth: document.getElementById('outlineWidth').value,
+                shadowBlur: document.getElementById('shadowBlur').value,
+                backgroundColor: document.getElementById('backgroundColor').value,
+                backgroundOpacity: document.getElementById('backgroundOpacity').value,
+                enableBackground: document.getElementById('enableBackground').checked
+            };
+            
+            // Only save if different from last state
+            if (historyIndex === -1 || JSON.stringify(state) !== JSON.stringify(history[historyIndex])) {
+                // If we're not at the end of history, remove future states
+                if (historyIndex < history.length - 1) {
+                    history = history.slice(0, historyIndex + 1);
+                }
+                
+                history.push(state);
+                historyIndex = history.length - 1;
+            }
+        }
+
+        function undoChange() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                applyHistoryState(history[historyIndex]);
+                showToast("Undo: Previous state restored");
+            }
+        }
+
+        function redoChange() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                applyHistoryState(history[historyIndex]);
+                showToast("Redo: Next state restored");
+            }
+        }
+
+        function applyHistoryState(state) {
+            document.getElementById('subtitleText').value = state.subtitleText;
+            document.getElementById('fontFamily').value = state.fontFamily;
+            document.getElementById('fontSize').value = state.fontSize;
+            document.getElementById('fontWeight').value = state.fontWeight;
+            document.getElementById('textColor').value = state.textColor;
+            document.getElementById('outlineWidth').value = state.outlineWidth;
+            document.getElementById('shadowBlur').value = state.shadowBlur;
+            document.getElementById('backgroundColor').value = state.backgroundColor;
+            document.getElementById('backgroundOpacity').value = state.backgroundOpacity;
+            document.getElementById('enableBackground').checked = state.enableBackground;
+            
+            document.getElementById('subtitleTextElement').textContent = state.subtitleText;
+            updateSubtitleStyle();
+        }
+
+        function createSnapshot() {
+            const name = document.getElementById('snapshotName').value || "Snapshot " + (history.length + 1);
+            saveToHistory();
+            showToast(`Snapshot "${name}" created!`);
+            document.getElementById('snapshotName').value = "";
+        }
+    </script>
+</body>
+</html>
