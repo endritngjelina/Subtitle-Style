@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SubtitleMaster Pro - Advanced Style Editor</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --bg-dark: #0f172a;
+            --bg-medium: #1e293b;
+            --bg-light: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border-color: #475569;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 320px;
+            height: calc(100vh - 73px);
+            gap: 1px;
+            background: var(--border-color);
+        }
+
+        .panel {
+            background: var(--bg-medium);
+            overflow-y: auto;
+        }
+
+        .panel-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(15, 23, 42, 0.3);
+        }
+
+        .panel-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .style-controls {
+            padding: 1rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .color-input {
+            height: 40px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .range-input {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .range-value {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .demo-video {
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            background: linear-gradient(45deg, #1a1a1a 25%, #2a2a2a 25%, #2a2a2a 50%, #1a1a1a 50%, #1a1a1a 75%, #2a2a2a 75%);
+            background-size: 40px 40px;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(30,30,30,0.6) 100%);
+        }
+
+        .play-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .play-button:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .subtitle-preview {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            font-weight: normal;
+            text-align: center;
+            max-width: 90%;
+            line-height: 1.4;
+            transition: all 0.3s;
+        }
+
+        .timeline {
+            padding: 1rem;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .timeline-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-slider {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-light);
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .timeline-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 3px;
+            width: 30%;
+            transition: width 0.1s;
+        }
+
+        .time-display {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .export-panel {
+            padding: 1rem;
+        }
+
+        .export-options {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .export-format {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .export-format:hover {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .export-format.active {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        .format-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .format-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .preset-btn {
+            padding: 0.75rem;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: var(--border-color);
+            border-color: var(--primary-color);
+        }
+
+        .advanced-controls {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 1001;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .recording {
+            animation: pulse 2s infinite;
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 280px 1fr 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+            
+            .panel {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="logo">
+            <div class="logo-icon">S</div>
+            <div>
+                <h1 style="font-size: 1.25rem; font-weight: 600;">SubtitleMaster Pro</h1>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Professional Subtitle Editor</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="importSubtitles()">
+                📁 Import
+            </button>
+            <button class="btn btn-primary" onclick="exportSubtitles()">
+                💾 Export
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Style Controls Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3 class="panel-title">Style Controls</h3>
+            </div>
+            <div class="style-controls">
+                <!-- Font Settings -->
+                <div class="control-group">
+                    <label class="control-label">Font Family</label>
+                    <select class="control-input" id="fontFamily" onchange="updateSubtitleStyle()">
+                        <option value="Arial">Arial</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Impact">Impact</option>
+                        <option value="Comic Sans MS">Comic Sans MS</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Font Size</label>
+                    <input type="range" class="range-input" id="fontSize" min="12" max="48" value="20" oninput="updateSubtitleStyle()">
+                    <div class="range-value" id="fontSizeValue">20px</div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Font Weight</label>
+                    <select class="control-input" id="fontWeight" onchange="updateSubtitleStyle()">
+                        <option value="normal">Normal</option>
+                        <option value="bold">Bold</option>
+                        <option value="lighter">Light</option>
+                        <option value="bolder">Extra Bold</option>
+                    </select>
+                </div>
+
+                <!-- Color Settings -->
+                <div class="control-group">
+                    <label class="control-label">Text Color</label>
+                    <input type="color" class="color-input" id="textColor" value="#ffffff" onchange="updateSubtitleStyle()">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Background Color</label>
+                    <input type="color" class="color-input" id="backgroundColor" value="#000000" onchange="updateSubtitleStyle()">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Background Opacity</label>
+                    <input type="range" class="range-input" id="backgroundOpacity" min="0" max="1" step="0.1" value="0.8" oninput="updateSubtitleStyle()">
+                    <div class="range-value" id="backgroundOpacityValue">80%</div>
+                </div>
+
+                <!-- Outline Settings -->
+                <div class="control-group">
+                    <label class="control-label">Outline Width</label>
+                    <input type="range" class="range-input" id="outlineWidth" min="0" max="5" step="0.5" value="1" oninput="updateSubtitleStyle()">
+                    <div class="range-value" id="outlineWidthValue">1px</div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Outline Color</label>
+                    <input type="color" class="color-input" id="outlineColor" value="#000000" onchange="updateSubtitleStyle()">
+                </div>
+
+                <!-- Position Settings -->
+                <div class="control-group">
+                    <label class="control-label">Vertical Position</label>
+                    <input type="range" class="range-input" id="verticalPosition" min="10" max="90" value="80" oninput="updateSubtitleStyle()">
+                    <div class="range-value" id="verticalPositionValue">80%</div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Text Alignment</label>
+                    <select class="control-input" id="textAlign" onchange="updateSubtitleStyle()">
+                        <option value="center">Center</option>
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+
+                <!-- Style Presets -->
+                <div class="control-group">
+                    <label class="control-label">Quick Presets</label>
+                    <div class="preset-grid">
+                        <button class="preset-btn" onclick="applyPreset('classic')">Classic</button>
+                        <button class="preset-btn" onclick="applyPreset('modern')">Modern</button>
+                        <button class="preset-btn" onclick="applyPreset('cinematic')">Cinematic</button>
+                        <button class="preset-btn" onclick="applyPreset('bold')">Bold</button>
+                    </div>
+                </div>
+
+                <!-- Advanced Settings -->
+                <div class="advanced-controls">
+                    <h4 style="margin-bottom: 1rem; color: var(--text-secondary);">Advanced Settings</h4>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Line Spacing</label>
+                        <input type="range" class="range-input" id="lineHeight" min="1" max="2" step="0.1" value="1.4" oninput="updateSubtitleStyle()">
+                        <div class="range-value" id="lineHeightValue">1.4</div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Character Spacing</label>
+                        <input type="range" class="range-input" id="letterSpacing" min="0" max="3" step="0.1" value="0" oninput="updateSubtitleStyle()">
+                        <div class="range-value" id="letterSpacingValue">0px</div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="italic" onchange="updateSubtitleStyle()">
+                        <label class="control-label">Italic</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="underline" onchange="updateSubtitleStyle()">
+                        <label class="control-label">Underline</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="shadow" onchange="updateSubtitleStyle()">
+                        <label class="control-label">Drop Shadow</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Preview Panel -->
+        <div class="panel">
+            <div class="demo-video" id="videoContainer">
+                <div class="video-overlay">
+                    <button class="play-button" onclick="togglePlayback()">▶</button>
+                </div>
+                <div class="subtitle-preview" id="subtitlePreview">
+                    This is a sample subtitle to demonstrate the styling options
+                </div>
+            </div>
+            <div class="timeline">
+                <div class="timeline-controls">
+                    <button class="btn btn-secondary" onclick="togglePlayback()" id="playBtn">▶</button>
+                    <div class="timeline-slider" onclick="seekTo(event)">
+                        <div class="timeline-progress" id="timelineProgress"></div>
+                    </div>
+                    <div class="time-display" id="timeDisplay">0:00 / 1:30</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3 class="panel-title">Export & Settings</h3>
+            </div>
+            <div class="export-panel">
+                <div class="export-options">
+                    <div class="export-format active" onclick="selectFormat('srt')">
+                        <div class="format-title">SRT Format</div>
+                        <div class="format-desc">Standard subtitle format, widely supported</div>
+                    </div>
+                    <div class="export-format" onclick="selectFormat('ass')">
+                        <div class="format-title">ASS Format</div>
+                        <div class="format-desc">Advanced formatting with styling support</div>
+                    </div>
+                    <div class="export-format" onclick="selectFormat('vtt')">
+                        <div class="format-title">WebVTT Format</div>
+                        <div class="format-desc">Web standard with positioning support</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="exportSubtitles()">
+                    💾 Export Subtitles
+                </button>
+
+                <div class="control-group">
+                    <label class="control-label">Subtitle Text</label>
+                    <textarea class="control-input" id="subtitleText" rows="3" placeholder="Enter your subtitle text..." onchange="updateSubtitlePreview()" style="resize: vertical;">This is a sample subtitle to demonstrate the styling options</textarea>
+                </div>
+
+                <div class="control-row">
+                    <div class="control-group">
+                        <label class="control-label">Start Time</label>
+                        <input type="text" class="control-input" id="startTime" value="00:00:00,000" placeholder="00:00:00,000">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">End Time</label>
+                        <input type="text" class="control-input" id="endTime" value="00:00:03,000" placeholder="00:00:03,000">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Video Resolution</label>
+                    <select class="control-input" id="videoResolution">
+                        <option value="1920x1080">1920×1080 (Full HD)</option>
+                        <option value="1280x720">1280×720 (HD)</option>
+                        <option value="3840x2160">3840×2160 (4K)</option>
+                        <option value="1366x768">1366×768</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Export Quality</label>
+                    <select class="control-input" id="exportQuality">
+                        <option value="high">High Quality</option>
+                        <option value="medium">Medium Quality</option>
+                        <option value="low">Low Quality</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="previewFullscreen()">
+                    🔍 Fullscreen Preview
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        Style exported successfully!
+    </div>
+
+    <script>
+        let isPlaying = false;
+        let currentTime = 0;
+        let duration = 90; // 1:30 minutes
+        let animationFrame;
+        let selectedFormat = 'srt';
+
+        // Initialize the application
+        function init() {
+            updateSubtitleStyle();
+            updateTimeDisplay();
+        }
+
+        // Update subtitle style preview
+        function updateSubtitleStyle() {
+            const preview = document.getElementById('subtitlePreview');
+            const fontFamily = document.getElementById('fontFamily').value;
+            const fontSize = document.getElementById('fontSize').value;
+            const fontWeight = document.getElementById('fontWeight').value;
+            const textColor = document.getElementById('textColor').value;
+            const backgroundColor = document.getElementById('backgroundColor').value;
+            const backgroundOpacity = document.getElementById('backgroundOpacity').value;
+            const outlineWidth = document.getElementById('outlineWidth').value;
+            const outlineColor = document.getElementById('outlineColor').value;
+            const verticalPosition = document.getElementById('verticalPosition').value;
+            const textAlign = document.getElementById('textAlign').value;
+            const lineHeight = document.getElementById('lineHeight').value;
+            const letterSpacing = document.getElementById('letterSpacing').value;
+            const italic = document.getElementById('italic').checked;
+            const underline = document.getElementById('underline').checked;
+            const shadow = document.getElementById('shadow').checked;
+
+            // Update range value displays
+            document.getElementById('fontSizeValue').textContent = fontSize + 'px';
+            document.getElementById('backgroundOpacityValue').textContent = Math.round(backgroundOpacity * 100) + '%';
+            document.getElementById('outlineWidthValue').textContent = outlineWidth + 'px';
+            document.getElementById('verticalPositionValue').textContent = verticalPosition + '%';
+            document.getElementById('lineHeightValue').textContent = lineHeight;
+            document.getElementById('letterSpacingValue').textContent = letterSpacing + 'px';
+
+            // Apply styles to preview
+            let style = `
+                font-family: ${fontFamily};
+                font-size: ${fontSize}px;
+                font-weight: ${fontWeight};
+                color: ${textColor};
+                background-color: ${hexToRgba(backgroundColor, backgroundOpacity)};
+                text-align: ${textAlign};
+                line-height: ${lineHeight};
+                letter-spacing: ${letterSpacing}px;
+                bottom: ${100 - verticalPosition}%;
+            `;
+
+            if (outlineWidth > 0) {
+                style += `-webkit-text-stroke: ${outlineWidth}px ${outlineColor}; `;
+            }
+
+            if (italic) {
+                style += 'font-style: italic; ';
+            }
+
+            if (underline) {
+                style += 'text-decoration: underline; ';
+            }
+
+            if (shadow) {
+                style += 'text-shadow: 2px 2px 4px rgba(0,0,0,0.7); ';
+            }
+
+            preview.style.cssText = style;
+        }
+
+        // Convert hex color to rgba
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        // Apply preset styles
+        function applyPreset(preset) {
+            const presets = {
+                classic: {
+                    fontFamily: 'Arial',
+                    fontSize: 20,
+                    fontWeight: 'normal',
+                    textColor: '#ffffff',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 0.8,
+                    outlineWidth: 1,
+                    outlineColor: '#000000',
+                    verticalPosition: 80,
+                    textAlign: 'center'
+                },
+                modern: {
+                    fontFamily: 'Helvetica',
+                    fontSize: 18,
+                    fontWeight: 'lighter',
+                    textColor: '#f8f9fa',
+                    backgroundColor: '#1a1a1a',
+                    backgroundOpacity: 0.9,
+                    outlineWidth: 0,
+                    outlineColor: '#000000',
+                    verticalPosition: 85,
+                    textAlign: 'center'
+                },
+                cinematic: {
+                    fontFamily: 'Times New Roman',
+                    fontSize: 22,
+                    fontWeight: 'normal',
+                    textColor: '#fff',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 0.6,
+                    outlineWidth: 2,
+                    outlineColor: '#333333',
+                    verticalPosition: 75,
+                    textAlign: 'center'
+                },
+                bold: {
+                    fontFamily: 'Impact',
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                    textColor: '#ffff00',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 1,
+                    outlineWidth: 3,
+                    outlineColor: '#000000',
+                    verticalPosition: 80,
+                    textAlign: 'center'
+                }
+            };
+
+            const style = presets[preset];
+            if (style) {
+                Object.keys(style).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = style[key];
+                    }
+                });
+                updateSubtitleStyle();
+            }
+        }
+
+        // Toggle video playback
+        function togglePlayback() {
+            const playBtn = document.getElementById('playBtn');
+            const videoOverlay = document.querySelector('.video-overlay');
+            
+            if (isPlaying) {
+                isPlaying = false;
+                playBtn.textContent = '▶';
+                videoOverlay.style.display = 'flex';
+                cancelAnimationFrame(animationFrame);
+            } else {
+                isPlaying = true;
+                playBtn.textContent = '⏸';
+                videoOverlay.style.display = 'none';
+                animate();
+            }
+        }
+
+        // Animation loop for timeline
+        function animate() {
+            if (isPlaying && currentTime < duration) {
+                currentTime += 0.1;
+                updateTimeline();
+                updateTimeDisplay();
+                animationFrame = requestAnimationFrame(animate);
+            } else if (currentTime >= duration) {
+                isPlaying = false;
+                document.getElementById('playBtn').textContent = '▶';
+                document.querySelector('.video-overlay').style.display = 'flex';
+                currentTime = 0;
+                updateTimeline();
+                updateTimeDisplay();
+            }
+        }
+
+        // Update timeline progress
+        function updateTimeline() {
+            const progress = (currentTime / duration) * 100;
+            document.getElementById('timelineProgress').style.width = progress + '%';
+        }
+
+        // Update time display
+        function updateTimeDisplay() {
+            const currentMin = Math.floor(currentTime / 60);
+            const currentSec = Math.floor(currentTime % 60);
+            const durationMin = Math.floor(duration / 60);
+            const durationSec = Math.floor(duration % 60);
+            
+            const currentTimeStr = `${currentMin}:${currentSec.toString().padStart(2, '0')}`;
+            const durationStr = `${durationMin}:${durationSec.toString().padStart(2, '0')}`;
+            
+            document.getElementById('timeDisplay').textContent = `${currentTimeStr} / ${durationStr}`;
+        }
+
+        // Seek to position on timeline click
+        function seekTo(event) {
+            const timeline = event.currentTarget;
+            const rect = timeline.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const percentage = clickX / rect.width;
+            currentTime = percentage * duration;
+            updateTimeline();
+            updateTimeDisplay();
+        }
+
+        // Update subtitle preview text
+        function updateSubtitlePreview() {
+            const text = document.getElementById('subtitleText').value;
+            document.getElementById('subtitlePreview').textContent = text || 'Sample subtitle text';
+        }
+
+        // Select export format
+        function selectFormat(format) {
+            selectedFormat = format;
+            document.querySelectorAll('.export-format').forEach(el => el.classList.remove('active'));
+            event.target.closest('.export-format').classList.add('active');
+        }
+
+        // Export subtitles with current styling
+        function exportSubtitles() {
+            const subtitleText = document.getElementById('subtitleText').value || 'Sample subtitle';
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            
+            let content = '';
+            let filename = '';
+            
+            switch(selectedFormat) {
+                case 'srt':
+                    content = generateSRT(subtitleText, startTime, endTime);
+                    filename = 'subtitles.srt';
+                    break;
+                case 'ass':
+                    content = generateASS(subtitleText, startTime, endTime);
+                    filename = 'subtitles.ass';
+                    break;
+                case 'vtt':
+                    content = generateVTT(subtitleText, startTime, endTime);
+                    filename = 'subtitles.vtt';
+                    break;
+            }
+            
+            downloadFile(content, filename);
+            showNotification('Subtitles exported successfully!');
+        }
+
+        // Generate SRT format
+        function generateSRT(text, startTime, endTime) {
+            const srtStartTime = convertToSRTTime(startTime);
+            const srtEndTime = convertToSRTTime(endTime);
+            
+            return `1
+${srtStartTime} --> ${srtEndTime}
+${text}
+
+`;
+        }
+
+        // Generate ASS format with styling
+        function generateASS(text, startTime, endTime) {
+            const fontFamily = document.getElementById('fontFamily').value;
+            const fontSize = document.getElementById('fontSize').value;
+            const textColor = document.getElementById('textColor').value;
+            const backgroundColor = document.getElementById('backgroundColor').value;
+            const fontWeight = document.getElementById('fontWeight').value;
+            const italic = document.getElementById('italic').checked ? 1 : 0;
+            const underline = document.getElementById('underline').checked ? 1 : 0;
+            const outlineWidth = document.getElementById('outlineWidth').value;
+            const outlineColor = document.getElementById('outlineColor').value;
+            
+            const assStartTime = convertToASSTime(startTime);
+            const assEndTime = convertToASSTime(endTime);
+            
+            return `[Script Info]
+Title: SubtitleMaster Pro Export
+ScriptType: v4.00+
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,${fontFamily},${fontSize},${hexToASSColor(textColor)},${hexToASSColor(textColor)},${hexToASSColor(outlineColor)},${hexToASSColor(backgroundColor)},${fontWeight === 'bold' ? 1 : 0},${italic},${underline},0,100,100,0,0,1,${outlineWidth},0,2,0,0,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,${assStartTime},${assEndTime},Default,,0,0,0,,${text}
+`;
+        }
+
+        // Generate WebVTT format
+        function generateVTT(text, startTime, endTime) {
+            const vttStartTime = convertToVTTTime(startTime);
+            const vttEndTime = convertToVTTTime(endTime);
+            
+            return `WEBVTT
+
+1
+${vttStartTime} --> ${vttEndTime}
+${text}
+
+`;
+        }
+
+        // Time conversion functions
+        function convertToSRTTime(time) {
+            return time.replace('.', ',');
+        }
+
+        function convertToASSTime(time) {
+            return time.substring(0, time.lastIndexOf(',')) + '.' + time.substring(time.lastIndexOf(',') + 1, -1);
+        }
+
+        function convertToVTTTime(time) {
+            return time.replace(',', '.');
+        }
+
+        // Convert hex color to ASS format
+        function hexToASSColor(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `&H00${b.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${r.toString(16).padStart(2, '0')}`;
+        }
+
+        // Download file function
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Import subtitles (placeholder)
+        function importSubtitles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.srt,.ass,.vtt,.sub';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        parseSubtitleFile(event.target.result, file.name);
+                        showNotification('Subtitles imported successfully!');
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        // Parse subtitle file (basic implementation)
+        function parseSubtitleFile(content, filename) {
+            const lines = content.split('\n');
+            let subtitleText = '';
+            
+            if (filename.endsWith('.srt')) {
+                // Simple SRT parsing
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].includes('-->')) {
+                        const timeLine = lines[i];
+                        const times = timeLine.split(' --> ');
+                        document.getElementById('startTime').value = times[0].trim();
+                        document.getElementById('endTime').value = times[1].trim();
+                        
+                        // Get subtitle text (next non-empty line)
+                        for (let j = i + 1; j < lines.length; j++) {
+                            if (lines[j].trim() !== '') {
+                                subtitleText += lines[j].trim() + ' ';
+                            } else {
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            if (subtitleText) {
+                document.getElementById('subtitleText').value = subtitleText.trim();
+                updateSubtitlePreview();
+            }
+        }
+
+        // Fullscreen preview
+        function previewFullscreen() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: black;
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            `;
+            
+            const preview = document.getElementById('subtitlePreview').cloneNode(true);
+            preview.style.position = 'static';
+            preview.style.transform = 'none';
+            preview.style.fontSize = '48px';
+            preview.style.maxWidth = '80%';
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '✕';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                background: rgba(255,255,255,0.2);
+                border: none;
+                color: white;
+                font-size: 24px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                cursor: pointer;
+            `;
+            
+            overlay.appendChild(preview);
+            overlay.appendChild(closeBtn);
+            document.body.appendChild(overlay);
+            
+            const close = () => {
+                document.body.removeChild(overlay);
+            };
+            
+            overlay.onclick = close;
+            closeBtn.onclick = close;
+            
+            // ESC key to close
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    close();
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        exportSubtitles();
+                        break;
+                    case 'o':
+                        e.preventDefault();
+                        importSubtitles();
+                        break;
+                    case ' ':
+                        e.preventDefault();
+                        togglePlayback();
+                        break;
+                }
+            }
+        });
+
+        // Auto-save functionality (using memory storage only)
+        let autoSaveData = {};
+
+        function autoSave() {
+            const controls = ['fontFamily', 'fontSize', 'fontWeight', 'textColor', 'backgroundColor', 
+                            'backgroundOpacity', 'outlineWidth', 'outlineColor', 'verticalPosition', 
+                            'textAlign', 'lineHeight', 'letterSpacing', 'subtitleText'];
+            
+            controls.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    autoSaveData[id] = element.type === 'checkbox' ? element.checked : element.value;
+                }
+            });
+        }
+
+        function loadAutoSave() {
+            Object.keys(autoSaveData).forEach(id => {
+                const element = document.getElementById(id);
+                if (element && autoSaveData[id] !== undefined) {
+                    if (element.type === 'checkbox') {
+                        element.checked = autoSaveData[id];
+                    } else {
+                        element.value = autoSaveData[id];
+                    }
+                }
+            });
+        }
+
+        // Auto-save every 5 seconds
+        setInterval(autoSave, 5000);
+
+        // Initialize application
+        window.onload = () => {
+            init();
+            loadAutoSave();
+        };
+
+        // Performance monitoring
+        const performanceMetrics = {
+            renderTime: 0,
+            lastUpdate: Date.now()
+        };
+
+        function measurePerformance() {
+            const now = Date.now();
+            performanceMetrics.renderTime = now - performanceMetrics.lastUpdate;
+            performanceMetrics.lastUpdate = now;
+        }
+
+        // Add performance monitoring to style updates
+        const originalUpdateSubtitleStyle = updateSubtitleStyle;
+        updateSubtitleStyle = function() {
+            const start = performance.now();
+            originalUpdateSubtitleStyle();
+            const end = performance.now();
+            console.log(`Style update took ${(end - start).toFixed(2)}ms`);
+        };
+    </script>
+</body>
+</html>
