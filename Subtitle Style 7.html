@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SubtitleCraft - Professional Style Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4f46e5;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "🎬";
+            font-size: 1.8rem;
+        }
+
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            height: fit-content;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .control-group h3 {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            align-items: center;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        input[type="range"] {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+        }
+
+        input[type="color"] {
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .preview-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .demo-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .subtitle-overlay {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            white-space: pre-wrap;
+            z-index: 10;
+            max-width: 90%;
+            line-height: 1.2;
+            transition: all 0.3s ease;
+        }
+
+        .export-section {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .timeline {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .timeline h4 {
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .timeline-content {
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: #4b5563;
+        }
+
+        .animation-preview {
+            background: #1f2937;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 0.5rem;
+            animation: fadeIn 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        .slide-up { animation: slideUp 0.5s ease-out; }
+        .typewriter { animation: typewriter 2s steps(40) infinite; }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4f46e5;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">SubtitleCraft Pro</div>
+        </header>
+
+        <div class="main-content">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>Typography</h3>
+                    <div class="form-group">
+                        <label>Font Family</label>
+                        <select id="fontFamily">
+                            <option value="Arial, sans-serif">Arial</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                            <option value="'Courier New', monospace">Courier New</option>
+                            <option value="Georgia, serif">Georgia</option>
+                            <option value="Verdana, sans-serif">Verdana</option>
+                            <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                            <option value="Impact, sans-serif">Impact</option>
+                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Size (px)</label>
+                            <input type="range" id="fontSize" min="12" max="72" value="32">
+                        </div>
+                        <div class="form-group">
+                            <label>Weight</label>
+                            <select id="fontWeight">
+                                <option value="normal">Normal</option>
+                                <option value="bold">Bold</option>
+                                <option value="lighter">Light</option>
+                                <option value="bolder">Extra Bold</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Colors & Effects</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Text Color</label>
+                            <input type="color" id="textColor" value="#ffffff">
+                        </div>
+                        <div class="form-group">
+                            <label>Outline Color</label>
+                            <input type="color" id="outlineColor" value="#000000">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Background Color</label>
+                            <input type="color" id="backgroundColor" value="#000000">
+                        </div>
+                        <div class="form-group">
+                            <label>Background Opacity</label>
+                            <input type="range" id="backgroundOpacity" min="0" max="100" value="70">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Outline Width</label>
+                            <input type="range" id="outlineWidth" min="0" max="5" value="2">
+                        </div>
+                        <div class="form-group">
+                            <label>Shadow Blur</label>
+                            <input type="range" id="shadowBlur" min="0" max="10" value="3">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Positioning</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Vertical Position</label>
+                            <select id="verticalPosition">
+                                <option value="bottom">Bottom</option>
+                                <option value="center">Center</option>
+                                <option value="top">Top</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Alignment</label>
+                            <select id="textAlign">
+                                <option value="center">Center</option>
+                                <option value="left">Left</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Margin (px)</label>
+                            <input type="range" id="margin" min="10" max="100" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Padding (px)</label>
+                            <input type="range" id="padding" min="0" max="30" value="8">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Animation & Effects</h3>
+                    <div class="form-group">
+                        <label>Animation Style</label>
+                        <select id="animationStyle">
+                            <option value="none">None</option>
+                            <option value="fade-in">Fade In</option>
+                            <option value="slide-up">Slide Up</option>
+                            <option value="typewriter">Typewriter</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Letter Spacing</label>
+                            <input type="range" id="letterSpacing" min="-2" max="10" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Line Height</label>
+                            <input type="range" id="lineHeight" min="0.8" max="2" step="0.1" value="1.2">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Quick Presets</h3>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" onclick="applyPreset('netflix')">Netflix Style</button>
+                        <button class="preset-btn" onclick="applyPreset('youtube')">YouTube Style</button>
+                        <button class="preset-btn" onclick="applyPreset('cinema')">Cinema Style</button>
+                        <button class="preset-btn" onclick="applyPreset('gaming')">Gaming Style</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Sample Text</h3>
+                    <div class="form-group">
+                        <textarea id="sampleText" rows="3" placeholder="Enter your subtitle text...">Hello! This is a sample subtitle text.\nYou can edit this to preview your styling.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="video-container">
+                    <div class="demo-video">
+                        🎥 Video Preview Area
+                    </div>
+                    <div class="subtitle-overlay" id="subtitlePreview">
+                        Hello! This is a sample subtitle text.
+                        You can edit this to preview your styling.
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="charCount">85</div>
+                        <div class="stat-label">Characters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="lineCount">2</div>
+                        <div class="stat-label">Lines</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="readingTime">3.4</div>
+                        <div class="stat-label">Read Time (s)</div>
+                    </div>
+                </div>
+
+                <div class="export-section">
+                    <button class="btn btn-primary" onclick="exportASS()">
+                        📄 Export ASS Format
+                    </button>
+                    <button class="btn btn-primary" onclick="exportSRT()">
+                        📄 Export SRT Format
+                    </button>
+                    <button class="btn btn-secondary" onclick="savePreset()">
+                        💾 Save Preset
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetStyles()">
+                        🔄 Reset Styles
+                    </button>
+                </div>
+
+                <div class="timeline">
+                    <h4>Generated Subtitle Code Preview</h4>
+                    <div class="timeline-content" id="codePreview">
+                        Updating...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentStyles = {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: 32,
+            fontWeight: 'normal',
+            textColor: '#ffffff',
+            outlineColor: '#000000',
+            backgroundColor: '#000000',
+            backgroundOpacity: 70,
+            outlineWidth: 2,
+            shadowBlur: 3,
+            verticalPosition: 'bottom',
+            textAlign: 'center',
+            margin: 50,
+            padding: 8,
+            animationStyle: 'none',
+            letterSpacing: 0,
+            lineHeight: 1.2
+        };
+
+        // Initialize event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeControls();
+            updatePreview();
+            updateStats();
+            generateCodePreview();
+        });
+
+        function initializeControls() {
+            const controls = [
+                'fontFamily', 'fontSize', 'fontWeight', 'textColor', 'outlineColor',
+                'backgroundColor', 'backgroundOpacity', 'outlineWidth', 'shadowBlur',
+                'verticalPosition', 'textAlign', 'margin', 'padding', 'animationStyle',
+                'letterSpacing', 'lineHeight', 'sampleText'
+            ];
+
+            controls.forEach(control => {
+                const element = document.getElementById(control);
+                if (element) {
+                    element.addEventListener('input', handleControlChange);
+                    element.addEventListener('change', handleControlChange);
+                }
+            });
+        }
+
+        function handleControlChange(event) {
+            const { id, value } = event.target;
+            
+            if (id === 'sampleText') {
+                updatePreview();
+                updateStats();
+                return;
+            }
+
+            currentStyles[id] = value;
+            updatePreview();
+            generateCodePreview();
+        }
+
+        function updatePreview() {
+            const preview = document.getElementById('subtitlePreview');
+            const sampleText = document.getElementById('sampleText').value || 'Sample subtitle text';
+            
+            const styles = currentStyles;
+            const bgOpacity = styles.backgroundOpacity / 100;
+            
+            let positionStyles = '';
+            switch (styles.verticalPosition) {
+                case 'top':
+                    positionStyles = `top: ${styles.margin}px; bottom: auto;`;
+                    break;
+                case 'center':
+                    positionStyles = `top: 50%; transform: translateX(-50%) translateY(-50%);`;
+                    break;
+                default:
+                    positionStyles = `bottom: ${styles.margin}px; top: auto;`;
+            }
+
+            preview.innerHTML = sampleText;
+            preview.style.cssText = `
+                position: absolute;
+                left: 50%;
+                ${positionStyles}
+                font-family: ${styles.fontFamily};
+                font-size: ${styles.fontSize}px;
+                font-weight: ${styles.fontWeight};
+                color: ${styles.textColor};
+                text-align: ${styles.textAlign};
+                background-color: ${hexToRgba(styles.backgroundColor, bgOpacity)};
+                padding: ${styles.padding}px ${styles.padding * 1.5}px;
+                border-radius: 4px;
+                text-shadow: 
+                    -${styles.outlineWidth}px -${styles.outlineWidth}px 0 ${styles.outlineColor},
+                    ${styles.outlineWidth}px -${styles.outlineWidth}px 0 ${styles.outlineColor},
+                    -${styles.outlineWidth}px ${styles.outlineWidth}px 0 ${styles.outlineColor},
+                    ${styles.outlineWidth}px ${styles.outlineWidth}px 0 ${styles.outlineColor},
+                    0 0 ${styles.shadowBlur}px rgba(0,0,0,0.8);
+                letter-spacing: ${styles.letterSpacing}px;
+                line-height: ${styles.lineHeight};
+                max-width: 90%;
+                white-space: pre-wrap;
+                z-index: 10;
+                animation-name: ${styles.animationStyle !== 'none' ? styles.animationStyle : 'none'};
+                animation-duration: 0.5s;
+                animation-fill-mode: both;
+            `;
+        }
+
+        function updateStats() {
+            const text = document.getElementById('sampleText').value || 'Sample subtitle text';
+            const charCount = text.length;
+            const lineCount = text.split('\n').length;
+            const readingTime = Math.max(charCount * 0.04, 2); // ~25 chars per second minimum 2s
+
+            document.getElementById('charCount').textContent = charCount;
+            document.getElementById('lineCount').textContent = lineCount;
+            document.getElementById('readingTime').textContent = readingTime.toFixed(1);
+        }
+
+        function generateCodePreview() {
+            const styles = currentStyles;
+            const code = `/* CSS Subtitle Styling */
+.subtitle {
+  font-family: ${styles.fontFamily};
+  font-size: ${styles.fontSize}px;
+  font-weight: ${styles.fontWeight};
+  color: ${styles.textColor};
+  background: ${hexToRgba(styles.backgroundColor, styles.backgroundOpacity/100)};
+  text-align: ${styles.textAlign};
+  padding: ${styles.padding}px;
+  letter-spacing: ${styles.letterSpacing}px;
+  line-height: ${styles.lineHeight};
+  text-shadow: 0 0 ${styles.shadowBlur}px rgba(0,0,0,0.8);
+}`;
+
+            document.getElementById('codePreview').textContent = code;
+        }
+
+        function applyPreset(presetName) {
+            const presets = {
+                netflix: {
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                    textColor: '#ffffff',
+                    outlineColor: '#000000',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 80,
+                    outlineWidth: 2,
+                    shadowBlur: 4,
+                    verticalPosition: 'bottom',
+                    textAlign: 'center',
+                    margin: 60,
+                    padding: 6,
+                    letterSpacing: 0,
+                    lineHeight: 1.3
+                },
+                youtube: {
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: 24,
+                    fontWeight: 'normal',
+                    textColor: '#ffffff',
+                    outlineColor: '#000000',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 75,
+                    outlineWidth: 1,
+                    shadowBlur: 2,
+                    verticalPosition: 'bottom',
+                    textAlign: 'center',
+                    margin: 40,
+                    padding: 4,
+                    letterSpacing: 0,
+                    lineHeight: 1.2
+                },
+                cinema: {
+                    fontFamily: 'Times New Roman, serif',
+                    fontSize: 36,
+                    fontWeight: 'normal',
+                    textColor: '#f0f0f0',
+                    outlineColor: '#000000',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 90,
+                    outlineWidth: 3,
+                    shadowBlur: 5,
+                    verticalPosition: 'bottom',
+                    textAlign: 'center',
+                    margin: 80,
+                    padding: 12,
+                    letterSpacing: 1,
+                    lineHeight: 1.4
+                },
+                gaming: {
+                    fontFamily: 'Impact, sans-serif',
+                    fontSize: 32,
+                    fontWeight: 'bold',
+                    textColor: '#00ff00',
+                    outlineColor: '#000000',
+                    backgroundColor: '#000000',
+                    backgroundOpacity: 60,
+                    outlineWidth: 2,
+                    shadowBlur: 6,
+                    verticalPosition: 'center',
+                    textAlign: 'center',
+                    margin: 50,
+                    padding: 8,
+                    letterSpacing: 2,
+                    lineHeight: 1.1
+                }
+            };
+
+            if (presets[presetName]) {
+                currentStyles = { ...presets[presetName] };
+                updateControlValues();
+                updatePreview();
+                generateCodePreview();
+            }
+        }
+
+        function updateControlValues() {
+            Object.keys(currentStyles).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = currentStyles[key];
+                }
+            });
+        }
+
+        function resetStyles() {
+            currentStyles = {
+                fontFamily: 'Arial, sans-serif',
+                fontSize: 32,
+                fontWeight: 'normal',
+                textColor: '#ffffff',
+                outlineColor: '#000000',
+                backgroundColor: '#000000',
+                backgroundOpacity: 70,
+                outlineWidth: 2,
+                shadowBlur: 3,
+                verticalPosition: 'bottom',
+                textAlign: 'center',
+                margin: 50,
+                padding: 8,
+                animationStyle: 'none',
+                letterSpacing: 0,
+                lineHeight: 1.2
+            };
+            updateControlValues();
+            updatePreview();
+            generateCodePreview();
+        }
+
+        function exportASS() {
+            const styles = currentStyles;
+            const text = document.getElementById('sampleText').value || 'Sample subtitle text';
+            
+            const assContent = `[Script Info]
+Title: SubtitleCraft Export
+ScriptType: v4.00+
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,${styles.fontFamily.split(',')[0]},${styles.fontSize},&H${colorToASS(styles.textColor)},&H${colorToASS(styles.textColor)},&H${colorToASS(styles.outlineColor)},&H${colorToASS(styles.backgroundColor)},${styles.fontWeight === 'bold' ? '1' : '0'},0,0,0,100,100,${styles.letterSpacing},0,1,${styles.outlineWidth},${styles.shadowBlur},${getASSAlignment()},10,10,${styles.margin},1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:01.00,0:00:05.00,Default,,0,0,0,,${text.replace(/\n/g, '\\N')}`;
+
+            downloadFile('subtitles.ass', assContent);
+        }
+
+        function exportSRT() {
+            const text = document.getElementById('sampleText').value || 'Sample subtitle text';
+            
+            const srtContent = `1
+00:00:01,000 --> 00:00:05,000
+${text}
+
+2
+00:00:06,000 --> 00:00:10,000
+This is a second subtitle line for demonstration.`;
+
+            downloadFile('subtitles.srt', srtContent);
+        }
+
+        function savePreset() {
+            const presetName = prompt('Enter preset name:');
+            if (presetName) {
+                const presetData = {
+                    name: presetName,
+                    styles: { ...currentStyles },
+                    timestamp: new Date().toISOString()
+                };
+                
+                // In a real application, this would save to a database
+                const presetJson = JSON.stringify(presetData, null, 2);
+                downloadFile(`${presetName}_preset.json`, presetJson);
+            }
+        }
+
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function colorToASS(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return (b << 16 | g << 8 | r).toString(16).padStart(6, '0').toUpperCase();
+        }
+
+        function getASSAlignment() {
+            const { textAlign, verticalPosition } = currentStyles;
+            let alignment = 2; // center bottom (default)
+            
+            if (verticalPosition === 'top') {
+                alignment = textAlign === 'left' ? 7 : textAlign === 'right' ? 9 : 8;
+            } else if (verticalPosition === 'center') {
+                alignment = textAlign === 'left' ? 4 : textAlign === 'right' ? 6 : 5;
+            } else { // bottom
+                alignment = textAlign === 'left' ? 1 : textAlign === 'right' ? 3 : 2;
+            }
+            
+            return alignment;
+        }
+
+        // Advanced features
+        function addAdvancedFeatures() {
+            // Real-time preview updates
+            setInterval(() => {
+                const preview = document.getElementById('subtitlePreview');
+                if (currentStyles.animationStyle !== 'none') {
+                    preview.style.animation = 'none';
+                    setTimeout(() => {
+                        preview.style.animation = `${currentStyles.animationStyle} 0.5s ease-in-out`;
+                    }, 10);
+                }
+            }, 3000);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case 's':
+                            e.preventDefault();
+                            savePreset();
+                            break;
+                        case 'e':
+                            e.preventDefault();
+                            exportSRT();
+                            break;
+                        case 'r':
+                            e.preventDefault();
+                            resetStyles();
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Initialize advanced features
+        addAdvancedFeatures();
+
+        // Performance optimization - debounced updates
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Accessibility enhancements
+        function enhanceAccessibility() {
+            // Add ARIA labels
+            document.querySelectorAll('input, select').forEach(input => {
+                const label = input.previousElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    input.setAttribute('aria-label', label.textContent);
+                }
+            });
+
+            // Add keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    // Custom tab order handling if needed
+                }
+            });
+        }
+
+        enhanceAccessibility();
+
+        // Analytics and usage tracking (for demo purposes)
+        function trackUsage(action, data) {
+            console.log(`Analytics: ${action}`, data);
+            // In production, this would send to analytics service
+        }
+
+        // Track preset usage
+        const originalApplyPreset = applyPreset;
+        applyPreset = function(presetName) {
+            trackUsage('preset_applied', { preset: presetName });
+            return originalApplyPreset(presetName);
+        };
+
+        // Track exports
+        const originalExportASS = exportASS;
+        exportASS = function() {
+            trackUsage('export_ass', currentStyles);
+            return originalExportASS();
+        };
+
+        const originalExportSRT = exportSRT;
+        exportSRT = function() {
+            trackUsage('export_srt', currentStyles);
+            return originalExportSRT();
+        };
+
+        // Professional error handling
+        window.addEventListener('error', (e) => {
+            console.error('Application error:', e.error);
+            // In production, this would report to error tracking service
+        });
+
+        // Feature tour for new users
+        function showFeatureTour() {
+            const tourSteps = [
+                {
+                    element: '.controls-panel',
+                    title: 'Style Controls',
+                    description: 'Customize every aspect of your subtitle appearance with these professional-grade controls.'
+                },
+                {
+                    element: '.video-container',
+                    title: 'Live Preview',
+                    description: 'See your changes in real-time with our interactive preview system.'
+                },
+                {
+                    element: '.export-section',
+                    title: 'Export Options',
+                    description: 'Export your styles in professional formats including ASS and SRT.'
+                }
+            ];
+            
+            // Simple tour implementation (in production, would use a library like Intro.js)
+            console.log('Feature tour available:', tourSteps);
+        }
+
+        // Show tour on first visit
+        if (!localStorage.getItem('tourCompleted')) {
+            setTimeout(showFeatureTour, 1000);
+        }
+    </script>
+</body>
+</html>
